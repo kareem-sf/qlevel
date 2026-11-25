@@ -1,0 +1,31 @@
+{
+  "name": "@qlevel/desktop",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:web": "vite --port 5173 --strictPort",
+    "build:web": "vite build",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@qlevel/bindings": "workspace:*",
+    "@qlevel/design-system": "workspace:*",
+    "@tauri-apps/api": "^2.2.0",
+    "pdfjs-dist": "^4.10.38",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.6",
+    "@tauri-apps/cli": "^2.2.0",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.6",
+    "typescript": "^5.7.2",
+    "vite": "^6.1.0"
+  }
+}
