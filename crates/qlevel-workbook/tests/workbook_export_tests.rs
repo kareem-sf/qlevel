@@ -99,7 +99,10 @@ fn sample_result(layout_mode: WorkbookLayoutMode) -> LevelingResult {
 
 #[test]
 fn exports_both_layouts_with_rtl_and_zero_xlfn_formulas() {
-    for mode in [WorkbookLayoutMode::SingleMasterSheet, WorkbookLayoutMode::DualTab] {
+    for mode in [
+        WorkbookLayoutMode::SingleMasterSheet,
+        WorkbookLayoutMode::DualTab,
+    ] {
         let bytes = export_leveling_workbook_bytes(&sample_result(mode)).expect("xlsx export");
         let mut archive = ZipArchive::new(Cursor::new(bytes)).expect("valid zip");
 

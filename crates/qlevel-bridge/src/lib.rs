@@ -25,4 +25,6 @@ pub use dto::{
 pub use error::{BridgeError, BridgeResult};
 pub use state::BridgeState;
 pub use updater::{check_or_apply_portable_update, verify_sha256_hex};
-pub use vault::{EnvelopeVault, InMemoryMasterKeyBackend, MasterKeyBackend, OsKeyringMasterBackend};
+pub use vault::{
+    EnvelopeVault, InMemoryMasterKeyBackend, MasterKeyBackend, OsKeyringMasterBackend,
+};

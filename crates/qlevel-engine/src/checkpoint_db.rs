@@ -64,8 +64,8 @@ impl CheckpointStore {
     /// # Errors
     /// Returns [`EngineError::CheckpointDb`] if SQLite initialization fails.
     pub fn open_file(path: &Path) -> EngineResult<Self> {
-        let conn = Connection::open(path)
-            .map_err(|err| EngineError::CheckpointDb(err.to_string()))?;
+        let conn =
+            Connection::open(path).map_err(|err| EngineError::CheckpointDb(err.to_string()))?;
         Self::init_connection(conn)
     }
 

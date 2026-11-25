@@ -42,10 +42,9 @@ jobs:
           node-version: "20"
           cache: "pnpm"
 
-      - name: Install Rust 1.85 toolchain
-        uses: dtolnay/rust-toolchain@master
+      - name: Install Rust stable toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: "1.85.0"
           components: rustfmt, clippy
 
       - name: Cache Cargo registry and target

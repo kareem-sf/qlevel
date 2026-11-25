@@ -52,10 +52,11 @@ struct OpenAiModelEntry {
 
 /// Parses both `{"data": [...]}` (Platform API Key) and `{"models": [...]}` (SIWC OAuth).
 pub fn parse_openai_models_response(body: &str) -> AiResult<Vec<RawProviderModel>> {
-    let root: Value = serde_json::from_str(body).map_err(|err| AiError::MalformedStructuredOutput {
-        provider: ProviderKind::OpenAi,
-        detail: err.to_string(),
-    })?;
+    let root: Value =
+        serde_json::from_str(body).map_err(|err| AiError::MalformedStructuredOutput {
+            provider: ProviderKind::OpenAi,
+            detail: err.to_string(),
+        })?;
 
     let arr = root
         .get("data")

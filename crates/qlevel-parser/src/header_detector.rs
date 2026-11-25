@@ -34,7 +34,9 @@ fn normalize_header_token(raw: &str) -> String {
     normalize_arabic_digits(raw)
         .to_lowercase()
         .chars()
-        .filter(|c| c.is_alphanumeric() || ('\u{0600}'..='\u{06FF}').contains(c) || c.is_whitespace())
+        .filter(|c| {
+            c.is_alphanumeric() || ('\u{0600}'..='\u{06FF}').contains(c) || c.is_whitespace()
+        })
         .collect::<String>()
         .split_whitespace()
         .collect::<Vec<_>>()
@@ -104,7 +106,16 @@ pub fn classify_document_role(file_name: &str, sample_text: &str) -> DocumentCla
 /// Returns [`ParserError::HeaderNotFound`] if no plausible BOQ header row is present.
 pub fn detect_header_columns(sheet: &ParsedSheet) -> ParserResult<DetectedColumnMap> {
     const CODE_PATTERNS: &[&str] = &[
-        "item", "code", "ref", "s n", "sn", "no", "بند", "م", "رقم البند", "كود",
+        "item",
+        "code",
+        "ref",
+        "s n",
+        "sn",
+        "no",
+        "بند",
+        "م",
+        "رقم البند",
+        "كود",
     ];
     const DESC_PATTERNS: &[&str] = &[
         "description",
@@ -224,7 +235,9 @@ fn is_subtotal_or_footer_row(desc: &str) -> bool {
         "المجموع",
         "جملة القسم",
     ];
-    footer_prefixes.iter().any(|p| lower.starts_with(p) || lower == *p)
+    footer_prefixes
+        .iter()
+        .any(|p| lower.starts_with(p) || lower == *p)
 }
 
 /// Deterministically extracts a `MasterBoq` from a parsed worksheet.

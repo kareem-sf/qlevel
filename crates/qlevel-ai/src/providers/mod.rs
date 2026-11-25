@@ -44,11 +44,11 @@ pub fn build_provider_client(
 ) -> AiResult<Box<dyn ProviderClient>> {
     match (provider, credential) {
         (ProviderKind::OpenAi, cred) => Ok(Box::new(OpenAiClient::new(http, cred))),
-        (ProviderKind::Gemini, ProviderAuthCredential::ApiKey { key }) => {
-            Ok(Box::new(GeminiClient::new(http, key)))
+        (ProviderKind::Gemini, ProviderAuthCredential::ApiKey { ref key }) => {
+            Ok(Box::new(GeminiClient::new(http, key.clone())))
         }
-        (ProviderKind::Claude, ProviderAuthCredential::ApiKey { key }) => {
-            Ok(Box::new(ClaudeClient::new(http, key)))
+        (ProviderKind::Claude, ProviderAuthCredential::ApiKey { ref key }) => {
+            Ok(Box::new(ClaudeClient::new(http, key.clone())))
         }
         (other, _) => Err(AiError::Unauthorized {
             provider: other,

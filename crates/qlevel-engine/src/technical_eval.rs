@@ -113,9 +113,11 @@ pub fn evaluate_technical_traps(
                             && t.source_snippet == *clause
                     });
                     if !already_present {
-                        let plug_basis = pat.default_pct_plug.map(|pct_int| PlugBasis::PctOfQuotedOnly {
-                            pct: DecimalValue::from_i64(pct_int),
-                        });
+                        let plug_basis =
+                            pat.default_pct_plug
+                                .map(|pct_int| PlugBasis::PctOfQuotedOnly {
+                                    pct: DecimalValue::from_i64(pct_int),
+                                });
                         traps.push(DetectedTrap {
                             id: format!("TRAP-TBE-{}-{clause_idx}", quote.vendor_id),
                             vendor_id: quote.vendor_id.clone(),
@@ -123,7 +125,10 @@ pub fn evaluate_technical_traps(
                             severity: pat.severity,
                             related_boq_id: None,
                             title: pat.title.to_owned(),
-                            detail: format!("Detected exclusion clause in {} quotation", quote.vendor_name),
+                            detail: format!(
+                                "Detected exclusion clause in {} quotation",
+                                quote.vendor_name
+                            ),
                             source_snippet: clause.clone(),
                             source_page: None,
                             plug_basis,
@@ -169,7 +174,8 @@ pub fn evaluate_technical_traps(
                         severity: TrapSeverity::High,
                         related_boq_id: None,
                         title: format!("Delivery Quoted as {upper} Instead of DDP Site"),
-                        detail: "Freight, insurance, or customs duties excluded from unit rates".to_owned(),
+                        detail: "Freight, insurance, or customs duties excluded from unit rates"
+                            .to_owned(),
                         source_snippet: incoterm.clone(),
                         source_page: None,
                         plug_basis: Some(PlugBasis::PctOfQuotedOnly {

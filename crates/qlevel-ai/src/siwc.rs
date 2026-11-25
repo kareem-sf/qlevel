@@ -83,8 +83,8 @@ pub fn build_siwc_authorize_url(
     agent_host_urn: &str,
     existing_dynamic_client_id: Option<&str>,
 ) -> AiResult<String> {
-    let mut url = Url::parse(OPENAI_SIWC_AUTH_URL)
-        .map_err(|err| AiError::OAuthFailure(err.to_string()))?;
+    let mut url =
+        Url::parse(OPENAI_SIWC_AUTH_URL).map_err(|err| AiError::OAuthFailure(err.to_string()))?;
 
     let client_id = existing_dynamic_client_id
         .filter(|id| id.starts_with("oaiapp_"))
@@ -117,17 +117,17 @@ pub struct BindLoopbackOutcome {
 pub fn bind_exclusive_loopback() -> AiResult<BindLoopbackOutcome> {
     let socket = Socket::new(Domain::IPV4, Type::STREAM, Some(Protocol::TCP))
         .map_err(|err| AiError::OAuthFailure(format!("Failed to create loopback socket: {err}")))?;
-    socket
-        .set_nonblocking(true)
-        .map_err(|err| AiError::OAuthFailure(format!("Failed setting nonblocking socket: {err}")))?;
+    socket.set_nonblocking(true).map_err(|err| {
+        AiError::OAuthFailure(format!("Failed setting nonblocking socket: {err}"))
+    })?;
 
     let addr = SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::LOCALHOST, 0));
     socket
         .bind(&addr.into())
         .map_err(|err| AiError::OAuthFailure(format!("Failed binding loopback port: {err}")))?;
-    socket
-        .listen(4)
-        .map_err(|err| AiError::OAuthFailure(format!("Failed listening on loopback port: {err}")))?;
+    socket.listen(4).map_err(|err| {
+        AiError::OAuthFailure(format!("Failed listening on loopback port: {err}"))
+    })?;
 
     let std_listener: std::net::TcpListener = socket.into();
     let local_addr = std_listener
@@ -184,14 +184,15 @@ impl OpenAiSiwcCoordinator {
     ) -> AiResult<OpenAiSiwcSession> {
         let (mut stream, _) = tokio::time::timeout(timeout, listener.accept())
             .await
-            .map_err(|_| AiError::OAuthFailure("Timed out waiting for ChatGPT browser sign-in".to_owned()))?
+            .map_err(|_| {
+                AiError::OAuthFailure("Timed out waiting for ChatGPT browser sign-in".to_owned())
+            })?
             .map_err(|err| AiError::OAuthFailure(format!("Loopback accept error: {err}")))?;
 
         let mut buf = vec![0_u8; 8192];
-        let n = stream
-            .read(&mut buf)
-            .await
-            .map_err(|err| AiError::OAuthFailure(format!("Failed reading callback request: {err}")))?;
+        let n = stream.read(&mut buf).await.map_err(|err| {
+            AiError::OAuthFailure(format!("Failed reading callback request: {err}"))
+        })?;
 
         let req_str = String::from_utf8_lossy(&buf[..n]);
         let request_path = req_str
@@ -242,8 +243,9 @@ impl OpenAiSiwcCoordinator {
             ));
         }
 
-        let auth_code = code_opt
-            .ok_or_else(|| AiError::OAuthFailure("Missing authorization code in callback".to_owned()))?;
+        let auth_code = code_opt.ok_or_else(|| {
+            AiError::OAuthFailure("Missing authorization code in callback".to_owned())
+        })?;
 
         let resolved_client_id = callback_client_id
             .or_else(|| fallback_client_id.map(ToOwned::to_owned))
@@ -282,8 +284,10 @@ impl OpenAiSiwcCoordinator {
             });
         }
 
-        let token_payload: TokenEndpointResponse =
-            resp.json().await.map_err(|err| AiError::OAuthFailure(err.to_string()))?;
+        let token_payload: TokenEndpointResponse = resp
+            .json()
+            .await
+            .map_err(|err| AiError::OAuthFailure(err.to_string()))?;
 
         let final_client_id = token_payload.client_id.unwrap_or(resolved_client_id);
         let account_email = token_payload
@@ -348,8 +352,10 @@ impl OpenAiSiwcCoordinator {
             });
         }
 
-        let token_payload: TokenEndpointResponse =
-            resp.json().await.map_err(|err| AiError::OAuthFailure(err.to_string()))?;
+        let token_payload: TokenEndpointResponse = resp
+            .json()
+            .await
+            .map_err(|err| AiError::OAuthFailure(err.to_string()))?;
 
         let expires_at_epoch_secs =
             Utc::now().timestamp() + token_payload.expires_in.unwrap_or(3600);

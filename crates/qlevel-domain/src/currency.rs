@@ -32,7 +32,7 @@ impl CurrencyCode {
 
     /// Standard statutory VAT percentage default (`15%` KSA, `14%` Egypt, `5%` UAE/Bahrain/Oman).
     #[must_use]
-    pub const fn default_vat_pct(self) -> DecimalValue {
+    pub fn default_vat_pct(self) -> DecimalValue {
         match self {
             Self::SAR => DecimalValue::from_parts_i64(15, 0),
             Self::EGP => DecimalValue::from_parts_i64(14, 0),
@@ -43,7 +43,7 @@ impl CurrencyCode {
 
     /// Arithmetic comparison tolerance equal to `1` minor currency unit (`0.01` or `0.001`).
     #[must_use]
-    pub const fn minor_unit_tolerance(self) -> DecimalValue {
+    pub fn minor_unit_tolerance(self) -> DecimalValue {
         DecimalValue::from_parts_i64(1, self.decimal_scale())
     }
 
@@ -115,9 +115,7 @@ impl VatPolicy {
     /// # Errors
     /// Returns [`DomainError::InvalidPercentage`] if negative or `>= 100`.
     pub fn validate(&self) -> DomainResult<()> {
-        if self.project_vat_pct.is_negative()
-            || self.project_vat_pct >= DecimalValue::ONE_HUNDRED
-        {
+        if self.project_vat_pct.is_negative() || self.project_vat_pct >= DecimalValue::ONE_HUNDRED {
             return Err(DomainError::InvalidPercentage {
                 value: self.project_vat_pct.to_string(),
                 min: "0".to_owned(),

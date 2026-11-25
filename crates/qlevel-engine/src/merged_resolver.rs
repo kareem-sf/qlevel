@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use qlevel_domain::{
     AlignmentGroup, AlignmentResolution, BoqItem, CellStatus, DecimalValue, GroupCardinality,
-    MasterBoq, MergedItemMode, VendorLineQuote, VendorQuote,
+    MasterBoq, MergedItemMode, VendorQuote,
 };
 
 use crate::error::EngineResult;
@@ -118,7 +118,6 @@ pub fn apply_merged_group_resolutions(
                 }
             }
             AlignmentResolution::ProportionalSplit => {
-                // Allocate lump sum across Master BOQ items by PTE weight (or equal weight if no PTE)
                 let count_u64 = group.master_boq_ids.len() as u64;
                 if count_u64 == 0 {
                     continue;

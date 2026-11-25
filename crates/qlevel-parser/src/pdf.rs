@@ -45,7 +45,10 @@ pub fn inspect_pdf_bytes(file_name: &str, bytes: &[u8]) -> ParserResult<ParsedDo
             .unwrap_or_default()
             .trim()
             .to_owned();
-        let non_ws_chars = extracted_text.chars().filter(|c| !c.is_whitespace()).count();
+        let non_ws_chars = extracted_text
+            .chars()
+            .filter(|c| !c.is_whitespace())
+            .count();
         let needs_rasterization = non_ws_chars < DIGITAL_TEXT_CHAR_THRESHOLD;
 
         if sample_text.len() < 1500 && !extracted_text.is_empty() {

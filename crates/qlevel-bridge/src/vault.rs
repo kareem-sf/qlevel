@@ -136,10 +136,9 @@ impl EnvelopeVault {
 
     fn read_unlocked(&self) -> BridgeResult<VaultPlaintextStore> {
         if !self.vault_file_path.exists() {
-            return Ok(VaultPlaintextStore {
-                agent_host_urn: format!("urn:uuid:{}", Uuid::new_v4()),
-                ..VaultPlaintextStore::default()
-            });
+            let mut empty_store = VaultPlaintextStore::default();
+            empty_store.agent_host_urn = format!("urn:uuid:{}", Uuid::new_v4());
+            return Ok(empty_store);
         }
 
         let raw = fs::read(&self.vault_file_path)
@@ -169,7 +168,9 @@ impl EnvelopeVault {
                     },
                 )
                 .map_err(|_| {
-                    BridgeError::VaultUnavailable("Vault AES-256-GCM authentication failed".to_owned())
+                    BridgeError::VaultUnavailable(
+                        "Vault AES-256-GCM authentication failed".to_owned(),
+                    )
                 })?,
         );
 
@@ -205,7 +206,8 @@ impl EnvelopeVault {
             )
             .map_err(|_| BridgeError::Internal("Vault encryption failed".to_owned()))?;
 
-        let mut envelope = Vec::with_capacity(MAGIC_HEADER.len() + NONCE_BYTES_LEN + ciphertext.len());
+        let mut envelope =
+            Vec::with_capacity(MAGIC_HEADER.len() + NONCE_BYTES_LEN + ciphertext.len());
         envelope.extend_from_slice(MAGIC_HEADER);
         envelope.extend_from_slice(&nonce_bytes);
         envelope.extend_from_slice(&ciphertext);
@@ -240,7 +242,10 @@ impl EnvelopeVault {
     }
 
     /// Saves an `OpenAiSiwcSession` encrypted on disk.
-    pub fn save_openai_siwc_session(&self, session: OpenAiSiwcSession) -> BridgeResult<ProviderAuthStatusDto> {
+    pub fn save_openai_siwc_session(
+        &self,
+        session: OpenAiSiwcSession,
+    ) -> BridgeResult<ProviderAuthStatusDto> {
         let _guard = self
             .io_lock
             .lock()
@@ -270,7 +275,9 @@ impl EnvelopeVault {
     ) -> BridgeResult<ProviderAuthStatusDto> {
         let trimmed = api_key.trim();
         if trimmed.is_empty() {
-            return Err(BridgeError::AuthExpired("API key must not be empty".to_owned()));
+            return Err(BridgeError::AuthExpired(
+                "API key must not be empty".to_owned(),
+            ));
         }
         if provider == ProviderKind::Gemini && !acknowledge_gemini_privacy {
             return Err(BridgeError::GeminiFreeTierUnacknowledged);
@@ -299,7 +306,10 @@ impl EnvelopeVault {
     }
 
     /// Disconnects and wipes stored credentials for `provider`.
-    pub fn disconnect_provider(&self, provider: ProviderKind) -> BridgeResult<ProviderAuthStatusDto> {
+    pub fn disconnect_provider(
+        &self,
+        provider: ProviderKind,
+    ) -> BridgeResult<ProviderAuthStatusDto> {
         let _guard = self
             .io_lock
             .lock()
@@ -349,7 +359,11 @@ impl EnvelopeVault {
 
         let candidates = match preferred {
             Some(p) => vec![p],
-            None => vec![ProviderKind::OpenAi, ProviderKind::Claude, ProviderKind::Gemini],
+            None => vec![
+                ProviderKind::OpenAi,
+                ProviderKind::Claude,
+                ProviderKind::Gemini,
+            ],
         };
 
         for p in candidates {

@@ -42,8 +42,8 @@ impl DecimalValue {
 
     /// Constructs a `DecimalValue` from mantissa and base-10 scale (`mantissa * 10^-scale`).
     #[must_use]
-    pub const fn from_parts_i64(mantissa: i64, scale: u32) -> Self {
-        Self(Decimal::from_i128_with_scale(mantissa as i128, scale))
+    pub fn from_parts_i64(mantissa: i64, scale: u32) -> Self {
+        Self(Decimal::from_i128_with_scale(i128::from(mantissa), scale))
     }
 
     /// Parses an exact base-10 decimal string, stripping optional thousands commas and spaces.

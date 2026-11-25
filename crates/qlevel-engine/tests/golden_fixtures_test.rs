@@ -4,9 +4,7 @@
 use std::fs;
 use std::path::PathBuf;
 
-use qlevel_domain::{
-    DecimalValue, LevelingSessionConfig, MasterBoq, TrapCategory, VendorQuote,
-};
+use qlevel_domain::{DecimalValue, LevelingSessionConfig, MasterBoq, TrapCategory, VendorQuote};
 use qlevel_engine::evaluate_quotes_deterministic;
 use serde::Deserialize;
 
@@ -48,8 +46,7 @@ fn golden_ksa_mep_fixture_levels_inclusive_vat_and_catches_exclusions() {
 
 #[test]
 fn golden_egy_fitout_fixture_catches_multiplication_error_and_preserves_merged_lump_sum() {
-    let raw =
-        fs::read_to_string(fixture_path("golden_egy_fitout.json")).expect("read egy fixture");
+    let raw = fs::read_to_string(fixture_path("golden_egy_fitout.json")).expect("read egy fixture");
     let fx: GoldenFixture = serde_json::from_str(&raw).expect("parse egy fixture");
 
     let res = evaluate_quotes_deterministic(&fx.config, &fx.master_boq, fx.quotes, None, &[])

@@ -71,8 +71,14 @@ fn parses_both_siwc_models_array_and_platform_data_array() {
     let siwc_json = r#"{"models":[{"id":"gpt-6.2","display_name":"GPT-6.2"}]}"#;
     let api_json = r#"{"object":"list","data":[{"id":"gpt-6.2"}]}"#;
 
-    assert_eq!(parse_openai_models_response(siwc_json).expect("siwc").len(), 1);
-    assert_eq!(parse_openai_models_response(api_json).expect("api").len(), 1);
+    assert_eq!(
+        parse_openai_models_response(siwc_json).expect("siwc").len(),
+        1
+    );
+    assert_eq!(
+        parse_openai_models_response(api_json).expect("api").len(),
+        1
+    );
 }
 
 #[test]

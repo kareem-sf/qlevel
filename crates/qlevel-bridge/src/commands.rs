@@ -15,8 +15,8 @@ use qlevel_domain::{
 };
 use qlevel_engine::pipeline::PreparedVendorInput;
 use qlevel_engine::{
-    build_synthetic_master_boq, evaluate_quotes_deterministic, run_extraction_and_leveling_pipeline,
-    RawVendorCandidateItem,
+    build_synthetic_master_boq, evaluate_quotes_deterministic,
+    run_extraction_and_leveling_pipeline, RawVendorCandidateItem,
 };
 use qlevel_parser::{
     extract_master_boq_from_sheet, inspect_pdf_bytes, parse_clipboard_table, parse_excel_bytes,
@@ -53,7 +53,9 @@ fn map_role(c: DocumentClassification) -> DocumentRoleDto {
 }
 
 /// Lists connection statuses across OpenAI, Gemini, and Claude.
-pub fn handle_list_provider_statuses(state: &BridgeState) -> BridgeResult<Vec<ProviderAuthStatusDto>> {
+pub fn handle_list_provider_statuses(
+    state: &BridgeState,
+) -> BridgeResult<Vec<ProviderAuthStatusDto>> {
     state.vault.list_statuses()
 }
 
@@ -174,7 +176,11 @@ pub fn handle_triage_dropped_files(
             });
         }
 
-        let hidden_rows_count: usize = parsed.sheets.iter().map(|s| s.hidden_row_numbers.len()).sum();
+        let hidden_rows_count: usize = parsed
+            .sheets
+            .iter()
+            .map(|s| s.hidden_row_numbers.len())
+            .sum();
 
         staged.push(StagedInputDocumentDto {
             id: doc_id,
@@ -285,16 +291,25 @@ fn load_parsed_doc(doc: &StagedInputDocumentDto) -> BridgeResult<Option<ParsedDo
             let lower = doc.file_name.to_lowercase();
             if lower.ends_with(".pdf") {
                 Ok(Some(inspect_pdf_bytes(&doc.file_name, &bytes)?))
-            } else if lower.ends_with(".csv") || lower.ends_with(".tsv") || lower.ends_with(".txt") {
+            } else if lower.ends_with(".csv") || lower.ends_with(".tsv") || lower.ends_with(".txt")
+            {
                 let txt = String::from_utf8_lossy(&bytes);
-                Ok(Some(parse_clipboard_table(&doc.file_name, None, Some(&txt))?))
+                Ok(Some(parse_clipboard_table(
+                    &doc.file_name,
+                    None,
+                    Some(&txt),
+                )?))
             } else {
                 Ok(Some(parse_excel_bytes(&doc.file_name, &bytes)?))
             }
         }
         InputSourceKindDto::PastedTable => {
             let txt = doc.pasted_text_payload.as_deref().unwrap_or("");
-            Ok(Some(parse_clipboard_table(&doc.file_name, None, Some(txt))?))
+            Ok(Some(parse_clipboard_table(
+                &doc.file_name,
+                None,
+                Some(txt),
+            )?))
         }
         InputSourceKindDto::PastedImage => Ok(None),
     }
@@ -318,7 +333,10 @@ fn format_parsed_doc_into_batches(parsed: &ParsedDocument) -> Vec<String> {
         let mut buf = String::new();
         for p in page_chunk {
             if !p.extracted_text.is_empty() {
-                buf.push_str(&format!("--- Page {} ---\n{}\n", p.page_number, p.extracted_text));
+                buf.push_str(&format!(
+                    "--- Page {} ---\n{}\n",
+                    p.page_number, p.extracted_text
+                ));
             }
         }
         if !buf.trim().is_empty() {
@@ -385,9 +403,11 @@ pub async fn handle_start_leveling_session(
         for (v_idx, v_doc) in vendor_docs.iter().enumerate() {
             if let Some(parsed) = load_parsed_doc(v_doc)? {
                 if let Some(sheet) = parsed.sheets.first() {
-                    if let Ok(extracted) =
-                        extract_master_boq_from_sheet(&v_doc.file_name, input.config.currency, sheet)
-                    {
+                    if let Ok(extracted) = extract_master_boq_from_sheet(
+                        &v_doc.file_name,
+                        input.config.currency,
+                        sheet,
+                    ) {
                         let cands: Vec<RawVendorCandidateItem> = extracted
                             .items
                             .into_iter()
@@ -434,7 +454,11 @@ pub async fn handle_start_leveling_session(
         let blake3_hex = parsed_opt
             .as_ref()
             .map(|p| p.blake3_hex.clone())
-            .unwrap_or_else(|| blake3::hash(v_doc.file_name.as_bytes()).to_hex().to_string());
+            .unwrap_or_else(|| {
+                blake3::hash(v_doc.file_name.as_bytes())
+                    .to_hex()
+                    .to_string()
+            });
 
         let mut images = Vec::new();
         if let Some(img_b64) = &v_doc.pasted_image_base64 {
@@ -486,11 +510,9 @@ pub async fn handle_start_leveling_session(
         &state.checkpoints,
         &cancel_token,
         |upd| {
-            let pct = if upd.total_steps == 0 {
-                50
-            } else {
-                15 + ((upd.completed_steps * 65) / upd.total_steps).min(65) as u8
-            };
+            let pct = (upd.completed_steps * 65)
+                .checked_div(upd.total_steps)
+                .map_or(50_u8, |v| 15 + (v.min(65) as u8));
             emitter.emit_progress(&LevelingProgressEvent {
                 session_id: session_id_progress.clone(),
                 stage: ProgressStageDto::ExtractingVendorQuotes,
@@ -583,13 +605,8 @@ pub async fn handle_start_leveling_session(
     });
 
     // 5. Deterministic Commercial & Technical Leveling
-    let result: LevelingResult = evaluate_quotes_deterministic(
-        &input.config,
-        &master_boq,
-        quotes,
-        Some(groups),
-        &ai_traps,
-    )?;
+    let result: LevelingResult =
+        evaluate_quotes_deterministic(&input.config, &master_boq, quotes, Some(groups), &ai_traps)?;
 
     let summary_dto = map_result_to_dto(&result);
 

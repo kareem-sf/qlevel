@@ -1,9 +1,7 @@
 //! Session orchestrator combining resumable `SQLite WAL` extraction, `CancellationToken`,
 //! merged-row resolution, TBE trap auditing, and deterministic `Decimal` commercial leveling.
 
-use qlevel_ai::{
-    ExtractedVendorBatch, ExtractionBatchInput, ImageAttachment, ProviderClient,
-};
+use qlevel_ai::{ExtractedVendorBatch, ExtractionBatchInput, ImageAttachment, ProviderClient};
 use qlevel_domain::{
     AlignmentGroup, AlignmentResolution, CellStatus, CommercialTerms, DecimalValue, DetectedTrap,
     LevelingResult, LevelingSessionConfig, MasterBoq, MergedItemMode, ModelInfo, PlugBasis,
@@ -237,6 +235,7 @@ pub fn evaluate_quotes_deterministic(
 /// # Errors
 /// Returns [`EngineError::Cancelled`] immediately if `cancel_token` is triggered, or
 /// upstream [`EngineError`] on provider/checkpoint/validation errors.
+#[allow(clippy::too_many_arguments)]
 pub async fn run_extraction_and_leveling_pipeline<F>(
     config: &LevelingSessionConfig,
     master_boq: &MasterBoq,
@@ -309,7 +308,9 @@ where
                 &config.custom_rules,
             );
 
-            let (batch_result, was_cached) = if let Some(cached) = checkpoint_store.get_batch(&ckpt_key)? {
+            let (batch_result, was_cached) = if let Some(cached) =
+                checkpoint_store.get_batch(&ckpt_key)?
+            {
                 (cached, true)
             } else {
                 let batch_input = ExtractionBatchInput {

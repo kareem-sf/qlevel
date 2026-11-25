@@ -5,7 +5,9 @@ use qlevel_domain::DomainError;
 /// Canonical error returned during Excel, PDF, or clipboard ingestion.
 #[derive(Debug, thiserror::Error)]
 pub enum ParserError {
-    #[error("File '{file_name}' is password-protected or encrypted; please save an unencrypted copy")]
+    #[error(
+        "File '{file_name}' is password-protected or encrypted; please save an unencrypted copy"
+    )]
     PasswordProtected { file_name: String },
 
     #[error("Unsupported file extension on '{file_name}' (expected .xlsx, .xlsm, .xls, .xlsb, .csv, or .pdf)")]

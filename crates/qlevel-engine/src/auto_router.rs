@@ -53,27 +53,28 @@ pub fn route_batch_model_and_effort(
         .as_deref()
         .is_some_and(|id| !id.trim().is_empty() && !id.eq_ignore_ascii_case("auto"));
 
-    let chosen_model = if let Some(manual_id) = ai_config.model_id.as_deref().filter(|_| is_manual_model) {
-        available_models
-            .iter()
-            .find(|m| m.id == manual_id)
-            .or_else(|| available_models.first())
-            .ok_or(EngineError::NoAvailableModels)?
-    } else if signals.requires_deep_reasoning() {
-        // Prefer flagship non-fast-tier reasoning model
-        available_models
-            .iter()
-            .find(|m| !m.is_fast_tier)
-            .or_else(|| available_models.first())
-            .ok_or(EngineError::NoAvailableModels)?
-    } else {
-        // Clean digital spreadsheet batch -> fast Multimodal tier if available
-        available_models
-            .iter()
-            .find(|m| m.is_fast_tier)
-            .or_else(|| available_models.first())
-            .ok_or(EngineError::NoAvailableModels)?
-    };
+    let chosen_model =
+        if let Some(manual_id) = ai_config.model_id.as_deref().filter(|_| is_manual_model) {
+            available_models
+                .iter()
+                .find(|m| m.id == manual_id)
+                .or_else(|| available_models.first())
+                .ok_or(EngineError::NoAvailableModels)?
+        } else if signals.requires_deep_reasoning() {
+            // Prefer flagship non-fast-tier reasoning model
+            available_models
+                .iter()
+                .find(|m| !m.is_fast_tier)
+                .or_else(|| available_models.first())
+                .ok_or(EngineError::NoAvailableModels)?
+        } else {
+            // Clean digital spreadsheet batch -> fast Multimodal tier if available
+            available_models
+                .iter()
+                .find(|m| m.is_fast_tier)
+                .or_else(|| available_models.first())
+                .ok_or(EngineError::NoAvailableModels)?
+        };
 
     let chosen_effort = match ai_config.effort {
         EffortLevel::Auto => {

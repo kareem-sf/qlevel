@@ -7,9 +7,9 @@ use std::path::Path;
 use qlevel_bridge::commands::{
     handle_cancel_leveling_session, handle_disconnect_provider, handle_export_workbook,
     handle_fetch_multimodal_models, handle_list_provider_statuses, handle_resolve_ambiguity_prompt,
-    handle_save_provider_api_key, handle_start_leveling_session, handle_start_openai_chatgpt_signin,
-    handle_submit_rendered_pdf_pages, handle_triage_dropped_files, handle_triage_pasted_clipboard,
-    BridgeEventEmitter,
+    handle_save_provider_api_key, handle_start_leveling_session,
+    handle_start_openai_chatgpt_signin, handle_submit_rendered_pdf_pages,
+    handle_triage_dropped_files, handle_triage_pasted_clipboard, BridgeEventEmitter,
 };
 use qlevel_bridge::{
     check_or_apply_portable_update, AmbiguityDecisionInput, AmbiguityPromptPayload, BridgeError,
@@ -210,13 +210,17 @@ fn qlevel_reveal_workbook_in_folder(file_path: String) -> BridgeResult<()> {
 #[tauri::command]
 fn qlevel_open_external_url(url: String) -> BridgeResult<()> {
     if !url.starts_with("https://") {
-        return Err(BridgeError::Internal("Only https:// URLs are permitted".to_owned()));
+        return Err(BridgeError::Internal(
+            "Only https:// URLs are permitted".to_owned(),
+        ));
     }
     open::that(&url).map_err(|e| BridgeError::Internal(e.to_string()))
 }
 
 #[tauri::command]
-async fn qlevel_check_for_updates(apply_portable_update: bool) -> BridgeResult<UpdateCheckStatusDto> {
+async fn qlevel_check_for_updates(
+    apply_portable_update: bool,
+) -> BridgeResult<UpdateCheckStatusDto> {
     check_or_apply_portable_update(apply_portable_update).await
 }
 

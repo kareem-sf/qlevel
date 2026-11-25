@@ -38,7 +38,11 @@ fn sample_session_config(merged_mode: MergedItemMode) -> LevelingSessionConfig {
         peer_plug_strategy: PeerPlugStrategy::LowestCompliant,
         ui_locale: Locale::Ar,
         sheet_direction: SheetDirection::Rtl,
-        approved_vendors: vec!["Trane".to_owned(), "Carrier".to_owned(), "Daikin".to_owned()],
+        approved_vendors: vec![
+            "Trane".to_owned(),
+            "Carrier".to_owned(),
+            "Daikin".to_owned(),
+        ],
         custom_rules: vec!["Scaffolding above 6m must be included".to_owned()],
     }
 }
@@ -357,9 +361,8 @@ fn synthetic_boq_preserves_every_vendor_row_with_zero_orphans_and_sqlite_checkpo
         },
     ];
 
-    let outcome =
-        build_synthetic_master_boq("Fitout Quotes Only", CurrencyCode::EGP, &[v1, v2])
-            .expect("synthetic boq");
+    let outcome = build_synthetic_master_boq("Fitout Quotes Only", CurrencyCode::EGP, &[v1, v2])
+        .expect("synthetic boq");
     assert_eq!(outcome.orphan_vendor_rows, 0);
     assert_eq!(outcome.master_boq.items.len(), 3);
 

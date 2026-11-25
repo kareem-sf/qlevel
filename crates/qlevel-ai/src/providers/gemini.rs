@@ -35,10 +35,11 @@ impl GeminiClient {
 
 /// Parses `GET /v1beta/models` keeping entries that support `generateContent`.
 pub fn parse_gemini_models_response(body: &str) -> AiResult<Vec<RawProviderModel>> {
-    let root: Value = serde_json::from_str(body).map_err(|err| AiError::MalformedStructuredOutput {
-        provider: ProviderKind::Gemini,
-        detail: err.to_string(),
-    })?;
+    let root: Value =
+        serde_json::from_str(body).map_err(|err| AiError::MalformedStructuredOutput {
+            provider: ProviderKind::Gemini,
+            detail: err.to_string(),
+        })?;
 
     let arr = root
         .get("models")
@@ -79,10 +80,7 @@ pub fn parse_gemini_models_response(body: &str) -> AiResult<Vec<RawProviderModel
 
 /// Builds the Gemini `generateContent` JSON request body.
 #[must_use]
-pub fn build_gemini_generate_payload(
-    effort: EffortLevel,
-    batch: &ExtractionBatchInput,
-) -> Value {
+pub fn build_gemini_generate_payload(effort: EffortLevel, batch: &ExtractionBatchInput) -> Value {
     let sys_text = build_extraction_instructions(&batch.custom_rules, &batch.approved_vendors);
 
     let mut parts = Vec::with_capacity(batch.images.len() + 1);
@@ -137,10 +135,11 @@ pub fn build_gemini_generate_payload(
 
 /// Extracts non-thought text parts from a Gemini `generateContent` response.
 pub fn extract_gemini_non_thought_text(body: &str) -> AiResult<String> {
-    let root: Value = serde_json::from_str(body).map_err(|err| AiError::MalformedStructuredOutput {
-        provider: ProviderKind::Gemini,
-        detail: err.to_string(),
-    })?;
+    let root: Value =
+        serde_json::from_str(body).map_err(|err| AiError::MalformedStructuredOutput {
+            provider: ProviderKind::Gemini,
+            detail: err.to_string(),
+        })?;
 
     let parts = root
         .get("candidates")

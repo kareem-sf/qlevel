@@ -40,18 +40,18 @@ impl ClaudeClient {
 
 /// Parses `GET https://api.anthropic.com/v1/models` response.
 pub fn parse_claude_models_response(body: &str) -> AiResult<Vec<RawProviderModel>> {
-    let root: Value = serde_json::from_str(body).map_err(|err| AiError::MalformedStructuredOutput {
-        provider: ProviderKind::Claude,
-        detail: err.to_string(),
-    })?;
+    let root: Value =
+        serde_json::from_str(body).map_err(|err| AiError::MalformedStructuredOutput {
+            provider: ProviderKind::Claude,
+            detail: err.to_string(),
+        })?;
 
-    let arr = root
-        .get("data")
-        .and_then(Value::as_array)
-        .ok_or_else(|| AiError::MalformedStructuredOutput {
+    let arr = root.get("data").and_then(Value::as_array).ok_or_else(|| {
+        AiError::MalformedStructuredOutput {
             provider: ProviderKind::Claude,
             detail: "Missing `data` array in Anthropic /v1/models".to_owned(),
-        })?;
+        }
+    })?;
 
     let mut out = Vec::with_capacity(arr.len());
     for item in arr {
@@ -125,10 +125,11 @@ pub fn build_claude_messages_payload(
 
 /// Extracts assistant `type == "text"` blocks (ignoring `"thinking"` blocks) from Claude response.
 pub fn extract_claude_text_blocks(body: &str) -> AiResult<String> {
-    let root: Value = serde_json::from_str(body).map_err(|err| AiError::MalformedStructuredOutput {
-        provider: ProviderKind::Claude,
-        detail: err.to_string(),
-    })?;
+    let root: Value =
+        serde_json::from_str(body).map_err(|err| AiError::MalformedStructuredOutput {
+            provider: ProviderKind::Claude,
+            detail: err.to_string(),
+        })?;
 
     let content = root
         .get("content")

@@ -10,7 +10,7 @@ use zip::ZipArchive;
 
 use crate::error::{ParserError, ParserResult};
 use crate::header_detector::classify_document_role;
-use crate::model::{ParsedDocument, ParsedSheet, RawRow};
+use crate::model::{DocumentClassification, ParsedDocument, ParsedSheet, RawRow};
 
 /// Compound File Binary (`OLE2`) magic header present on password-encrypted `.xlsx` files.
 const OLE2_MAGIC: &[u8; 8] = &[0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
@@ -21,7 +21,6 @@ fn is_encrypted_ole_package(file_name: &str, bytes: &[u8]) -> bool {
     if is_modern_ooxml_ext && bytes.starts_with(OLE2_MAGIC) {
         return true;
     }
-    // Check ASCII/UTF-16LE marker for EncryptedPackage inside OLE container
     bytes
         .windows(b"EncryptedPackage".len())
         .any(|w| w == b"EncryptedPackage")
@@ -29,9 +28,7 @@ fn is_encrypted_ole_package(file_name: &str, bytes: &[u8]) -> bool {
 
 /// Inspects OOXML zip archive (`xl/workbook.xml` + `xl/worksheets/sheet*.xml`) to find
 /// hidden sheets (`state="hidden"` / `state="veryHidden"`) and `<row r="N" hidden="1">` rows.
-fn scan_ooxml_hidden_metadata(
-    bytes: &[u8],
-) -> (HashSet<String>, HashMap<usize, Vec<u32>>) {
+fn scan_ooxml_hidden_metadata(bytes: &[u8]) -> (HashSet<String>, HashMap<usize, Vec<u32>>) {
     let mut hidden_sheets = HashSet::new();
     let mut hidden_rows_by_sheet_idx: HashMap<usize, Vec<u32>> = HashMap::new();
 
@@ -39,7 +36,6 @@ fn scan_ooxml_hidden_metadata(
         return (hidden_sheets, hidden_rows_by_sheet_idx);
     };
 
-    // 1. Parse xl/workbook.xml for sheet names & hidden states in declaration order
     if let Ok(mut wb_file) = archive.by_name("xl/workbook.xml") {
         let mut xml_str = String::new();
         if wb_file.read_to_string(&mut xml_str).is_ok() {
@@ -47,7 +43,9 @@ fn scan_ooxml_hidden_metadata(
             reader.config_mut().trim_text(true);
             loop {
                 match reader.read_event() {
-                    Ok(Event::Empty(e) | Event::Start(e)) if e.local_name().as_ref() == b"sheet" => {
+                    Ok(Event::Empty(e) | Event::Start(e))
+                        if e.local_name().as_ref() == b"sheet" =>
+                    {
                         let mut name_opt = None;
                         let mut is_hidden = false;
                         for attr in e.attributes().flatten() {
@@ -77,7 +75,6 @@ fn scan_ooxml_hidden_metadata(
         }
     }
 
-    // 2. Scan xl/worksheets/sheet{1..N}.xml for <row r="12" hidden="1"> or hidden="true"
     for idx in 1..=64_usize {
         let entry_name = format!("xl/worksheets/sheet{idx}.xml");
         let Ok(mut sheet_file) = archive.by_name(&entry_name) else {
@@ -174,11 +171,12 @@ pub fn parse_excel_bytes(file_name: &str, bytes: &[u8]) -> ParserResult<ParsedDo
     let blake3_hex = blake3::hash(bytes).to_hex().to_string();
     let (hidden_sheet_names, hidden_rows_by_idx) = scan_ooxml_hidden_metadata(bytes);
 
-    let mut workbook =
-        open_workbook_auto_from_rs(Cursor::new(bytes)).map_err(|err| ParserError::WorkbookCorrupted {
+    let mut workbook = open_workbook_auto_from_rs(Cursor::new(bytes)).map_err(|err| {
+        ParserError::WorkbookCorrupted {
             file_name: file_name.to_owned(),
             reason: err.to_string(),
-        })?;
+        }
+    })?;
 
     let sheet_names = workbook.sheet_names();
     let mut parsed_sheets = Vec::with_capacity(sheet_names.len());

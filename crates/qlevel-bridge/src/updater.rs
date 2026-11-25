@@ -74,7 +74,9 @@ pub fn replace_running_portable_binary(
 ///
 /// # Errors
 /// Returns [`BridgeError`] if network or directory writability checks fail.
-pub async fn check_or_apply_portable_update(apply_update: bool) -> BridgeResult<UpdateCheckStatusDto> {
+pub async fn check_or_apply_portable_update(
+    apply_update: bool,
+) -> BridgeResult<UpdateCheckStatusDto> {
     let current_version = env!("CARGO_PKG_VERSION").to_owned();
 
     if apply_update {

@@ -4,9 +4,7 @@
 use std::sync::Arc;
 
 use qlevel_ai::OpenAiSiwcSession;
-use qlevel_bridge::{
-    verify_sha256_hex, EnvelopeVault, InMemoryMasterKeyBackend,
-};
+use qlevel_bridge::{verify_sha256_hex, EnvelopeVault, InMemoryMasterKeyBackend};
 use qlevel_domain::ProviderKind;
 use tempfile::tempdir;
 
@@ -28,7 +26,9 @@ fn envelope_vault_encrypts_large_oauth_bundles_exceeding_windows_2560_byte_limit
         expires_at_epoch_secs: 1_900_000_000,
     };
 
-    let status = vault.save_openai_siwc_session(session).expect("save large siwc");
+    let status = vault
+        .save_openai_siwc_session(session)
+        .expect("save large siwc");
     assert!(status.connected);
     assert_eq!(status.account_label.as_deref(), Some("kareem@qsmind.app"));
 

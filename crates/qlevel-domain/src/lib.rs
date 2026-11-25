@@ -16,17 +16,14 @@ pub mod session;
 pub mod traps;
 pub mod vendor;
 
-pub use alignment::{
-    AlignmentGroup, AlignmentResolution, GroupCardinality, MergedItemMode,
-};
+pub use alignment::{AlignmentGroup, AlignmentResolution, GroupCardinality, MergedItemMode};
 pub use boq::{BoqItem, LineItemKind, MasterBoq};
 pub use currency::{CurrencyCode, Locale, SheetDirection, VatMode, VatPolicy};
 pub use decimal::DecimalValue;
 pub use error::{DomainError, DomainResult};
 pub use session::{
-    AiConfig, AuthMethod, EffortLevel, LeveledLineCell, LevelingResult,
-    LevelingSessionConfig, ModelInfo, PeerPlugStrategy, ProviderKind,
-    VendorEvaluationSummary, WorkbookLayoutMode,
+    AiConfig, AuthMethod, EffortLevel, LeveledLineCell, LevelingResult, LevelingSessionConfig,
+    ModelInfo, PeerPlugStrategy, ProviderKind, VendorEvaluationSummary, WorkbookLayoutMode,
 };
 pub use traps::{DetectedTrap, PlugBasis, TrapCategory, TrapSeverity};
 pub use vendor::{CellStatus, CommercialTerms, VendorLineQuote, VendorQuote};

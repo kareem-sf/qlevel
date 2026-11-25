@@ -3,7 +3,7 @@
 use std::fs::OpenOptions;
 use std::path::{Path, PathBuf};
 
-///Prefix written by Microsoft Excel (`ASCII 0x7E` + `$`) beside an open `.xlsx` workbook.
+/// Prefix written by Microsoft Excel (`ASCII 0x7E` + `$`) beside an open `.xlsx` workbook.
 const EXCEL_OWNER_LOCK_PREFIX: &str = "\u{007e}$";
 
 /// Result of checking whether a target `.xlsx` path can be overwritten safely.
@@ -20,9 +20,7 @@ pub enum FileLockStatus {
 /// Computes an unlocked versioned sibling filename (e.g. `Comparison_v2.xlsx`, `Comparison_v3.xlsx`).
 #[must_use]
 pub fn suggest_unlocked_version_path(original_path: &Path) -> PathBuf {
-    let parent = original_path
-        .parent()
-        .unwrap_or_else(|| Path::new("."));
+    let parent = original_path.parent().unwrap_or_else(|| Path::new("."));
     let ext = original_path
         .extension()
         .and_then(|e| e.to_str())
@@ -32,9 +30,10 @@ pub fn suggest_unlocked_version_path(original_path: &Path) -> PathBuf {
         .and_then(|s| s.to_str())
         .unwrap_or("Bid_Leveling");
 
-    // Strip trailing _vN if already versioned
     let base_stem = match raw_stem.rsplit_once("_v") {
-        Some((prefix, num_str)) if !prefix.is_empty() && num_str.chars().all(|c| c.is_ascii_digit()) => {
+        Some((prefix, num_str))
+            if !prefix.is_empty() && num_str.chars().all(|c| c.is_ascii_digit()) =>
+        {
             prefix
         }
         _ => raw_stem,
@@ -71,7 +70,7 @@ pub fn probe_output_path_writable(target_path: &Path) -> FileLockStatus {
         return FileLockStatus::Writable;
     }
 
-    match OpenOptions::new().write(true).append(true).open(target_path) {
+    match OpenOptions::new().append(true).open(target_path) {
         Ok(_handle) => FileLockStatus::Writable,
         Err(err) => FileLockStatus::Locked {
             locked_path: target_path.to_path_buf(),

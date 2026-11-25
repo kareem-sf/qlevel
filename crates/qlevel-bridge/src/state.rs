@@ -23,7 +23,8 @@ pub struct BridgeState {
     pub http_client: reqwest::Client,
     pub siwc_coordinator: Arc<OpenAiSiwcCoordinator>,
     pub active_cancellations: Mutex<HashMap<String, CancellationToken>>,
-    pub pending_ambiguity_tx: Mutex<HashMap<(String, String), oneshot::Sender<AmbiguityDecisionInput>>>,
+    pub pending_ambiguity_tx:
+        Mutex<HashMap<(String, String), oneshot::Sender<AmbiguityDecisionInput>>>,
     pub rendered_pdf_cache: Mutex<HashMap<String, Vec<RenderedPageImageDto>>>,
     pub completed_results: Mutex<HashMap<String, LevelingResult>>,
 }

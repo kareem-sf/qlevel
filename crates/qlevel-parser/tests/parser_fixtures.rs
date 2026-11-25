@@ -23,12 +23,12 @@ fn detects_hidden_excel_rows_and_extracts_arabic_master_boq() {
     ws.write_string(0, 4, "سعر الوحدة").expect("h4");
 
     ws.write_string(1, 0, "1.1").expect("r1");
-    ws.write_string(1, 1, "توريد وتركيب وحدات تكييف مخفي").expect("r1");
+    ws.write_string(1, 1, "توريد وتركيب وحدات تكييف مخفي")
+        .expect("r1");
     ws.write_string(1, 2, "عدد").expect("r1");
     ws.write_string(1, 3, "١٢").expect("r1");
     ws.write_number(1, 4, 4500.0).expect("r1");
 
-    // Hidden trap row inside Excel
     ws.set_row_hidden(2).expect("hide row");
     ws.write_string(2, 0, "1.2").expect("r2");
     ws.write_string(2, 1, "بند مخفي").expect("r2");
@@ -36,7 +36,8 @@ fn detects_hidden_excel_rows_and_extracts_arabic_master_boq() {
     ws.write_number(2, 3, 99.0).expect("r2");
 
     ws.write_string(3, 0, "1.3").expect("r3");
-    ws.write_string(3, 1, "مبلغ احتياطي لأعمال الاختبارات").expect("r3");
+    ws.write_string(3, 1, "مبلغ احتياطي لأعمال الاختبارات")
+        .expect("r3");
     ws.write_string(3, 2, "PS").expect("r3");
     ws.write_number(3, 3, 1.0).expect("r3");
     ws.write_number(3, 4, 25000.0).expect("r3");
@@ -66,5 +67,5 @@ fn parses_clipboard_tsv_and_arabic_indic_digits() {
 #[test]
 fn suggests_incremented_unlocked_filename() {
     let fallback = suggest_unlocked_version_path(Path::new("Comparison_Report.xlsx"));
-    assert_eq!(fallback, Path::new("./Comparison_Report_v2.xlsx"));
+    assert_eq!(fallback, Path::new("Comparison_Report_v2.xlsx"));
 }

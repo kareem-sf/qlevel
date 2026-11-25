@@ -56,7 +56,9 @@ fn units_compatible(u1: &str, u2: &str) -> bool {
 fn normalize_desc(s: &str) -> String {
     s.to_lowercase()
         .chars()
-        .filter(|c| c.is_alphanumeric() || ('\u{0600}'..='\u{06FF}').contains(c) || c.is_whitespace())
+        .filter(|c| {
+            c.is_alphanumeric() || ('\u{0600}'..='\u{06FF}').contains(c) || c.is_whitespace()
+        })
         .collect::<String>()
         .split_whitespace()
         .collect::<Vec<_>>()
@@ -159,8 +161,10 @@ pub fn build_synthetic_master_boq(
             if let Some((matched_idx, _)) = best_match {
                 claimed_boq_indices.insert(matched_idx);
                 if let Some(target_item) = boq_items.get(matched_idx) {
-                    vendor_row_to_boq_id
-                        .insert((cand.vendor_id.clone(), cand.row_index), target_item.id.clone());
+                    vendor_row_to_boq_id.insert(
+                        (cand.vendor_id.clone(), cand.row_index),
+                        target_item.id.clone(),
+                    );
                 }
             } else {
                 let next_idx = boq_items.len() + 1;

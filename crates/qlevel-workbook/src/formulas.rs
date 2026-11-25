@@ -93,7 +93,11 @@ pub fn validate_excel_2016_formula(formula: &str) -> WorkbookResult<()> {
 }
 
 /// Builds a classic `=SUM(ColStart:ColEnd)` vertical column sum formula.
-pub fn build_vertical_sum_formula(col: u16, first_row: u32, last_row: u32) -> WorkbookResult<String> {
+pub fn build_vertical_sum_formula(
+    col: u16,
+    first_row: u32,
+    last_row: u32,
+) -> WorkbookResult<String> {
     if last_row < first_row {
         return Ok("=0".to_owned());
     }

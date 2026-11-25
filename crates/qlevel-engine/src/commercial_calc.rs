@@ -144,14 +144,20 @@ pub fn evaluate_commercial_leveling(
 
         for quote in quotes {
             let line_opt = quote.lines.iter().find(|l| l.boq_item_id == item.id);
-            let is_yellow_anchor = yellow_anchors.contains(&(quote.vendor_id.clone(), item.id.clone()));
+            let is_yellow_anchor =
+                yellow_anchors.contains(&(quote.vendor_id.clone(), item.id.clone()));
 
             let norm_cell = match (&item.kind, line_opt) {
                 (LineItemKind::ProvisionalSum, maybe_line) => {
                     let submitted = match maybe_line {
                         Some(l) if matches!(l.status, CellStatus::Quoted) => {
-                            convert_fx_and_strip_vat(l.quoted_extended_total, quote, Some(l), config)?
-                                .round_commercial(scale)
+                            convert_fx_and_strip_vat(
+                                l.quoted_extended_total,
+                                quote,
+                                Some(l),
+                                config,
+                            )?
+                            .round_commercial(scale)
                         }
                         _ => DecimalValue::ZERO,
                     };
@@ -175,10 +181,17 @@ pub fn evaluate_commercial_leveling(
                         },
                     }
                 }
-                (LineItemKind::RateOnly | LineItemKind::Optional | LineItemKind::Alternative { .. }, maybe_line) => {
+                (
+                    LineItemKind::RateOnly
+                    | LineItemKind::Optional
+                    | LineItemKind::Alternative { .. },
+                    maybe_line,
+                ) => {
                     let net_rate = match maybe_line {
-                        Some(l) => convert_fx_and_strip_vat(l.quoted_unit_rate, quote, Some(l), config)?
-                            .round_commercial(scale + 2),
+                        Some(l) => {
+                            convert_fx_and_strip_vat(l.quoted_unit_rate, quote, Some(l), config)?
+                                .round_commercial(scale + 2)
+                        }
                         None => DecimalValue::ZERO,
                     };
                     NormalizedVendorCell {
@@ -188,7 +201,9 @@ pub fn evaluate_commercial_leveling(
                         normalized_measured_net: DecimalValue::ZERO,
                         arithmetic_delta: DecimalValue::ZERO,
                         highlight_yellow: false,
-                        audit_note: Some("Memorandum item excluded from base measured sum".to_owned()),
+                        audit_note: Some(
+                            "Memorandum item excluded from base measured sum".to_owned(),
+                        ),
                     }
                 }
                 (LineItemKind::Measured, Some(line)) => match &line.status {
@@ -213,22 +228,39 @@ pub fn evaluate_commercial_leveling(
                         audit_note: line.notes.clone(),
                     },
                     CellStatus::Quoted | CellStatus::UnderPricedAllowance => {
-                        let net_rate =
-                            convert_fx_and_strip_vat(line.quoted_unit_rate, quote, Some(line), config)?;
-                        let submitted_net =
-                            convert_fx_and_strip_vat(line.quoted_extended_total, quote, Some(line), config)?
-                                .round_commercial(scale);
+                        let net_rate = convert_fx_and_strip_vat(
+                            line.quoted_unit_rate,
+                            quote,
+                            Some(line),
+                            config,
+                        )?;
+                        let submitted_net = convert_fx_and_strip_vat(
+                            line.quoted_extended_total,
+                            quote,
+                            Some(line),
+                            config,
+                        )?
+                        .round_commercial(scale);
 
                         // If anchor of a merged lump-sum row with zero unit rate, preserve lump sum
-                        let leveled_base = if is_yellow_anchor && net_rate.is_zero() && submitted_net.is_positive() {
+                        let leveled_base = if is_yellow_anchor
+                            && net_rate.is_zero()
+                            && submitted_net.is_positive()
+                        {
                             submitted_net
                         } else {
                             item.quantity.checked_mul(net_rate)?.round_commercial(scale)
                         };
 
                         // Check vendor's own multiplication (quoted_qty * net_rate vs submitted_net)
-                        if !is_yellow_anchor && line.quoted_qty.is_positive() && net_rate.is_positive() {
-                            let vendor_math = line.quoted_qty.checked_mul(net_rate)?.round_commercial(scale);
+                        if !is_yellow_anchor
+                            && line.quoted_qty.is_positive()
+                            && net_rate.is_positive()
+                        {
+                            let vendor_math = line
+                                .quoted_qty
+                                .checked_mul(net_rate)?
+                                .round_commercial(scale);
                             let math_diff = vendor_math.checked_sub(submitted_net)?;
                             if math_diff.abs() > tolerance {
                                 traps.push(DetectedTrap {
@@ -237,7 +269,10 @@ pub fn evaluate_commercial_leveling(
                                     category: TrapCategory::QtyArithmetic,
                                     severity: TrapSeverity::High,
                                     related_boq_id: Some(item.id.clone()),
-                                    title: format!("Arithmetic multiplication error on {}", item.code),
+                                    title: format!(
+                                        "Arithmetic multiplication error on {}",
+                                        item.code
+                                    ),
                                     detail: format!(
                                         "Vendor printed {} instead of {} ({} * {})",
                                         submitted_net.to_fixed_string(scale),
@@ -284,7 +319,10 @@ pub fn evaluate_commercial_leveling(
                             arithmetic_delta: leveled_base.checked_sub(submitted_net)?,
                             highlight_yellow: is_yellow_anchor,
                             audit_note: if is_yellow_anchor {
-                                Some("Merged vendor lump-sum anchor; verify constituent items".to_owned())
+                                Some(
+                                    "Merged vendor lump-sum anchor; verify constituent items"
+                                        .to_owned(),
+                                )
                             } else {
                                 line.notes.clone()
                             },
@@ -298,7 +336,9 @@ pub fn evaluate_commercial_leveling(
                     normalized_measured_net: DecimalValue::ZERO,
                     arithmetic_delta: DecimalValue::ZERO,
                     highlight_yellow: false,
-                    audit_note: Some("Omitted by vendor; peer equalization plug applied".to_owned()),
+                    audit_note: Some(
+                        "Omitted by vendor; peer equalization plug applied".to_owned(),
+                    ),
                 },
             };
 
@@ -390,14 +430,18 @@ pub fn evaluate_commercial_leveling(
         let mut unquoted_items_count = 0_usize;
         let mut merged_items_count = 0_usize;
 
-        for cell in finalized_cells.iter().filter(|c| c.vendor_id == quote.vendor_id) {
+        for cell in finalized_cells
+            .iter()
+            .filter(|c| c.vendor_id == quote.vendor_id)
+        {
             let kind = boq_kind_map
                 .get(cell.boq_item_id.as_str())
                 .copied()
                 .unwrap_or(&LineItemKind::Measured);
 
             as_submitted_total = as_submitted_total.checked_add(cell.as_submitted_net_total)?;
-            arithmetic_and_qty_delta = arithmetic_and_qty_delta.checked_add(cell.arithmetic_delta)?;
+            arithmetic_and_qty_delta =
+                arithmetic_and_qty_delta.checked_add(cell.arithmetic_delta)?;
             line_scope_plugs_total = line_scope_plugs_total.checked_add(cell.scope_plug_amount)?;
 
             match kind {
@@ -406,9 +450,8 @@ pub fn evaluate_commercial_leveling(
                         provisional_sum_equalized_total.checked_add(cell.leveled_net_total)?;
                 }
                 LineItemKind::Measured => {
-                    quoted_measured_net = quoted_measured_net.checked_add(
-                        cell.leveled_net_total.checked_sub(cell.scope_plug_amount)?,
-                    )?;
+                    quoted_measured_net = quoted_measured_net
+                        .checked_add(cell.leveled_net_total.checked_sub(cell.scope_plug_amount)?)?;
                     match cell.status {
                         CellStatus::Quoted => quoted_items_count += 1,
                         CellStatus::IncludedIn { .. } => merged_items_count += 1,
@@ -418,7 +461,9 @@ pub fn evaluate_commercial_leveling(
                         CellStatus::UnderPricedAllowance => {}
                     }
                 }
-                LineItemKind::RateOnly | LineItemKind::Optional | LineItemKind::Alternative { .. } => {}
+                LineItemKind::RateOnly
+                | LineItemKind::Optional
+                | LineItemKind::Alternative { .. } => {}
             }
         }
 
