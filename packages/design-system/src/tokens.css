@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  --ql-bg-canvas: #f8fafc;
+  --ql-bg-surface: #ffffff;
+  --ql-bg-subtle: #f1f5f9;
+  --ql-border-subtle: #e2e8f0;
+  --ql-border-strong: #cbd5e1;
+  --ql-text-primary: #0f172a;
+  --ql-text-secondary: #475569;
+  --ql-accent-teal: #0f766e;
+  --ql-accent-teal-hover: #115e59;
+  --ql-winner-bg: #dcfce7;
+  --ql-winner-fg: #166534;
+  --ql-warn-bg: #fef3c7;
+  --ql-warn-fg: #92400e;
+  --ql-danger-bg: #fee2e2;
+  --ql-danger-fg: #991b1b;
+}
+
+body {
+  background-color: var(--ql-bg-canvas);
+  color: var(--ql-text-primary);
+  font-family: "IBM Plex Sans Arabic", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
