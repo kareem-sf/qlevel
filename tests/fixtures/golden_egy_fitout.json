@@ -1,0 +1,153 @@
+{
+  "expectedTrueLowVendorId": "V-NILE",
+  "expectedTrueLowLeveledNet": "488000.00",
+  "config": {
+    "sessionId": "GOLDEN-EGY-FITOUT-01",
+    "ai": {
+      "provider": null,
+      "modelId": null,
+      "effort": "auto"
+    },
+    "currency": "EGP",
+    "vatPolicy": {
+      "projectVatPct": "14",
+      "defaultVendorMode": "exclusive"
+    },
+    "layoutMode": "dual_tab",
+    "mergedItemMode": "yellow_highlight_auto",
+    "peerPlugStrategy": "lowest_compliant",
+    "uiLocale": "ar",
+    "sheetDirection": "rtl",
+    "approvedVendors": ["Knauf", "Jotun"],
+    "customRules": []
+  },
+  "masterBoq": {
+    "title": "New Cairo HQ Interior Fit-Out Works",
+    "currency": "EGP",
+    "isSynthetic": false,
+    "items": [
+      {
+        "id": "EGY-01",
+        "code": "F-01",
+        "section": "Ceilings",
+        "description": "Moisture-resistant gypsum board ceiling 12.5mm with galvanized framing",
+        "unit": "m2",
+        "quantity": "340",
+        "kind": { "type": "measured" },
+        "pteUnitRate": "920"
+      },
+      {
+        "id": "EGY-02",
+        "code": "F-02",
+        "section": "Finishes",
+        "description": "Washable acrylic silk wall paint 3 coats + putty",
+        "unit": "m2",
+        "quantity": "800",
+        "kind": { "type": "measured" },
+        "pteUnitRate": "230"
+      }
+    ]
+  },
+  "quotes": [
+    {
+      "vendorId": "V-NILE",
+      "vendorName": "Nile Architectural Finishes",
+      "currency": "EGP",
+      "fxRateToProject": "1",
+      "defaultVatMode": "exclusive",
+      "statedGrandTotal": "488000.00",
+      "terms": {
+        "paymentTerms": "Monthly IPCs",
+        "deliveryIncoterms": "DDP New Cairo",
+        "deliveryWeeks": 8,
+        "validityDays": 60,
+        "warrantyMonths": 12,
+        "generalDiscountPct": "0",
+        "lumpSumDiscount": "0"
+      },
+      "lines": [
+        {
+          "boqItemId": "EGY-01",
+          "vendorCode": "F-01+F-02",
+          "vendorDescription": "Lump sum for complete Knauf gypsum ceilings and Jotun wall painting",
+          "quotedUnit": "LS",
+          "quotedQty": "1",
+          "quotedUnitRate": "0",
+          "quotedExtendedTotal": "488000",
+          "vatMode": "exclusive",
+          "vendorVatPct": null,
+          "status": { "status": "quoted" },
+          "proposedBrand": "Knauf",
+          "sourcePage": 1,
+          "notes": null
+        },
+        {
+          "boqItemId": "EGY-02",
+          "vendorCode": null,
+          "vendorDescription": "Included in F-01 lump sum",
+          "quotedUnit": "m2",
+          "quotedQty": "0",
+          "quotedUnitRate": "0",
+          "quotedExtendedTotal": "0",
+          "vatMode": "exclusive",
+          "vendorVatPct": null,
+          "status": { "status": "included_in", "anchor_boq_id": "EGY-01" },
+          "proposedBrand": "Jotun",
+          "sourcePage": 1,
+          "notes": null
+        }
+      ],
+      "rawExclusionClauses": []
+    },
+    {
+      "vendorId": "V-CAIRO",
+      "vendorName": "Cairo Rapid Build",
+      "currency": "EGP",
+      "fxRateToProject": "1",
+      "defaultVatMode": "exclusive",
+      "statedGrandTotal": "476000.00",
+      "terms": {
+        "paymentTerms": "Monthly IPCs",
+        "deliveryIncoterms": "DDP New Cairo",
+        "deliveryWeeks": 6,
+        "validityDays": 60,
+        "warrantyMonths": 12,
+        "generalDiscountPct": "0",
+        "lumpSumDiscount": "0"
+      },
+      "lines": [
+        {
+          "boqItemId": "EGY-01",
+          "vendorCode": "F-01",
+          "vendorDescription": "Gypsum board ceiling (printed wrong multiplication 300,000 instead of 323,000)",
+          "quotedUnit": "m2",
+          "quotedQty": "340",
+          "quotedUnitRate": "950",
+          "quotedExtendedTotal": "300000",
+          "vatMode": "exclusive",
+          "vendorVatPct": null,
+          "status": { "status": "quoted" },
+          "proposedBrand": "Knauf",
+          "sourcePage": 1,
+          "notes": null
+        },
+        {
+          "boqItemId": "EGY-02",
+          "vendorCode": "F-02",
+          "vendorDescription": "Acrylic paint",
+          "quotedUnit": "m2",
+          "quotedQty": "800",
+          "quotedUnitRate": "220",
+          "quotedExtendedTotal": "176000",
+          "vatMode": "exclusive",
+          "vendorVatPct": null,
+          "status": { "status": "quoted" },
+          "proposedBrand": "Jotun",
+          "sourcePage": 1,
+          "notes": null
+        }
+      ],
+      "rawExclusionClauses": []
+    }
+  ]
+}

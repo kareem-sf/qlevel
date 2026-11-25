@@ -1,0 +1,165 @@
+{
+  "expectedTrueLowVendorId": "V-NAJD",
+  "expectedTrueLowLeveledNet": "760000.00",
+  "config": {
+    "sessionId": "GOLDEN-KSA-MEP-01",
+    "ai": {
+      "provider": null,
+      "modelId": null,
+      "effort": "auto"
+    },
+    "currency": "SAR",
+    "vatPolicy": {
+      "projectVatPct": "15",
+      "defaultVendorMode": "exclusive"
+    },
+    "layoutMode": "single_master_sheet",
+    "mergedItemMode": "yellow_highlight_auto",
+    "peerPlugStrategy": "lowest_compliant",
+    "uiLocale": "ar",
+    "sheetDirection": "rtl",
+    "approvedVendors": ["Trane", "Carrier", "Daikin"],
+    "customRules": ["Scaffolding above 6m must be included"]
+  },
+  "masterBoq": {
+    "title": "Riyadh Business Gate - HVAC & Fire Fighting Package",
+    "currency": "SAR",
+    "isSynthetic": false,
+    "items": [
+      {
+        "id": "KSA-01",
+        "code": "M-1.1",
+        "section": "HVAC Equipment",
+        "description": "Supply and install air-cooled screw chiller 220 TR AHRI certified",
+        "unit": "No",
+        "quantity": "2",
+        "kind": { "type": "measured" },
+        "pteUnitRate": "285000"
+      },
+      {
+        "id": "KSA-02",
+        "code": "M-1.2",
+        "section": "Piping & Valves",
+        "description": "Chilled water black steel piping Sch 40 with elastomeric insulation",
+        "unit": "m",
+        "quantity": "400",
+        "kind": { "type": "measured" },
+        "pteUnitRate": "360"
+      },
+      {
+        "id": "KSA-03",
+        "code": "M-1.3",
+        "section": "Allowances",
+        "description": "Provisional Sum for Civil Defense BMS interface",
+        "unit": "PS",
+        "quantity": "1",
+        "kind": { "type": "provisional_sum" },
+        "pteUnitRate": "60000"
+      }
+    ]
+  },
+  "quotes": [
+    {
+      "vendorId": "V-NAJD",
+      "vendorName": "Najd Electromechanical Co.",
+      "currency": "SAR",
+      "fxRateToProject": "1",
+      "defaultVatMode": "inclusive",
+      "statedGrandTotal": "874000.00",
+      "terms": {
+        "paymentTerms": "10% Advance, 80% Delivery, 10% TOC",
+        "deliveryIncoterms": "DDP Riyadh Site",
+        "deliveryWeeks": 14,
+        "validityDays": 90,
+        "warrantyMonths": 24,
+        "generalDiscountPct": "0",
+        "lumpSumDiscount": "0"
+      },
+      "lines": [
+        {
+          "boqItemId": "KSA-01",
+          "vendorCode": "1.1",
+          "vendorDescription": "Air-cooled chiller 220 TR Trane",
+          "quotedUnit": "No",
+          "quotedQty": "2",
+          "quotedUnitRate": "322000",
+          "quotedExtendedTotal": "644000",
+          "vatMode": "inclusive",
+          "vendorVatPct": null,
+          "status": { "status": "quoted" },
+          "proposedBrand": "Trane",
+          "sourcePage": 1,
+          "notes": null
+        },
+        {
+          "boqItemId": "KSA-02",
+          "vendorCode": "1.2",
+          "vendorDescription": "CHW black steel piping complete",
+          "quotedUnit": "m",
+          "quotedQty": "400",
+          "quotedUnitRate": "402.50",
+          "quotedExtendedTotal": "161000",
+          "vatMode": "inclusive",
+          "vendorVatPct": null,
+          "status": { "status": "quoted" },
+          "proposedBrand": null,
+          "sourcePage": 1,
+          "notes": null
+        },
+        {
+          "boqItemId": "KSA-03",
+          "vendorCode": "1.3",
+          "vendorDescription": "BMS Provisional Sum",
+          "quotedUnit": "PS",
+          "quotedQty": "1",
+          "quotedUnitRate": "69000",
+          "quotedExtendedTotal": "69000",
+          "vatMode": "inclusive",
+          "vendorVatPct": null,
+          "status": { "status": "quoted" },
+          "proposedBrand": null,
+          "sourcePage": 1,
+          "notes": null
+        }
+      ],
+      "rawExclusionClauses": []
+    },
+    {
+      "vendorId": "V-GULF",
+      "vendorName": "Gulf Horizon Contracting",
+      "currency": "SAR",
+      "fxRateToProject": "1",
+      "defaultVatMode": "exclusive",
+      "statedGrandTotal": "550000.00",
+      "terms": {
+        "paymentTerms": "20% Advance",
+        "deliveryIncoterms": "EXW Factory",
+        "deliveryWeeks": 18,
+        "validityDays": 15,
+        "warrantyMonths": 12,
+        "generalDiscountPct": "0",
+        "lumpSumDiscount": "0"
+      },
+      "lines": [
+        {
+          "boqItemId": "KSA-01",
+          "vendorCode": "1.1",
+          "vendorDescription": "Chiller 220 TR",
+          "quotedUnit": "No",
+          "quotedQty": "2",
+          "quotedUnitRate": "275000",
+          "quotedExtendedTotal": "550000",
+          "vatMode": "exclusive",
+          "vendorVatPct": null,
+          "status": { "status": "quoted" },
+          "proposedBrand": "UnlistedBrand",
+          "sourcePage": 1,
+          "notes": null
+        }
+      ],
+      "rawExclusionClauses": [
+        "Page 8 Note 4: Third party testing excluded and scaffolding excluded above 3m."
+      ]
+    }
+  ]
+}
