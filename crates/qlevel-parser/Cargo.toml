@@ -1,0 +1,32 @@
+[package]
+name = "qlevel-parser"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+description = "Pure-Rust Excel (with XML hidden-row detection), PDF, clipboard, and header parser for qlevel"
+
+[lib]
+name = "qlevel_parser"
+path = "src/lib.rs"
+
+[dependencies]
+qlevel-domain = { workspace = true }
+
+blake3 = { workspace = true }
+calamine = { workspace = true }
+lopdf = { workspace = true }
+quick-xml = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+zip = { workspace = true }
+
+[dev-dependencies]
+rust_xlsxwriter = { workspace = true }
+tempfile = { workspace = true }
+
+[lints]
+workspace = true
