@@ -1,0 +1,36 @@
+[package]
+name = "qlevel-engine"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+description = "Deterministic Decimal bid-leveling engine, SQLite WAL checkpointing, synthetic BOQ builder, and TBE auditor for qlevel"
+
+[lib]
+name = "qlevel_engine"
+path = "src/lib.rs"
+
+[dependencies]
+qlevel-domain = { workspace = true }
+qlevel-parser = { workspace = true }
+qlevel-ai = { workspace = true }
+
+blake3 = { workspace = true }
+chrono = { workspace = true }
+rapidfuzz = { workspace = true }
+rusqlite = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[lints]
+workspace = true
