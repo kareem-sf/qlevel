@@ -27,6 +27,7 @@ import { AuthModal } from "./components/AuthModal";
 import { DropzoneWorkspace } from "./components/DropzoneWorkspace";
 import { ResultView } from "./components/ResultView";
 import { DICTIONARIES, type UiLanguage } from "./i18n";
+import { rasterizePdfPagesInMemory } from "./pdfRenderer";
 
 function createInitialConfig(lang: UiLanguage): LevelingSessionConfig {
   return {
@@ -127,7 +128,7 @@ export function App() {
     void refreshStatuses();
   }, [refreshStatuses]);
 
-  // Subscribe to Tauri progress, ambiguity prompts, and native drag-and-drop
+  // Subscribe to Tauri progress, ambiguity prompts, scanned PDF rasterization, and native drag-drop
   useEffect(() => {
     let active = true;
     const unsubs: Array<() => void> = [];
@@ -143,7 +144,28 @@ export function App() {
           setAmbiguityPrompt(ev);
         }
       });
-      const u3 = await qlevelClient.onNativeFileDrop((ev) => {
+      const u3 = await qlevelClient.onPdfRasterRequest((ev) => {
+        if (!active) {
+          return;
+        }
+        void qlevelClient
+          .readPdfBytes(ev.filePath)
+          .then((byteArr) =>
+            rasterizePdfPagesInMemory(
+              new Uint8Array(byteArr),
+              ev.pageNumbers,
+              ev.targetDpi
+            )
+          )
+          .then((pages) =>
+            qlevelClient.submitRenderedPdfPages({
+              documentId: ev.documentId,
+              pages,
+            })
+          )
+          .catch(() => undefined);
+      });
+      const u4 = await qlevelClient.onNativeFileDrop((ev) => {
         if (!active) {
           return;
         }
@@ -166,7 +188,7 @@ export function App() {
             });
         }
       });
-      unsubs.push(u1, u2, u3);
+      unsubs.push(u1, u2, u3, u4);
     })();
 
     return () => {

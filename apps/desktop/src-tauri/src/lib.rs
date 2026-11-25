@@ -129,6 +129,14 @@ async fn qlevel_pick_save_workbook_path(suggested_path: String) -> BridgeResult<
 }
 
 #[tauri::command]
+fn qlevel_read_pdf_bytes(file_path: String) -> BridgeResult<Vec<u8>> {
+    std::fs::read(&file_path).map_err(|e| BridgeError::FileCorrupted {
+        file_name: file_path,
+        reason: e.to_string(),
+    })
+}
+
+#[tauri::command]
 fn qlevel_triage_dropped_files(
     app: AppHandle,
     file_paths: Vec<String>,
@@ -234,6 +242,7 @@ pub fn run_desktop_app() -> Result<(), String> {
             qlevel_pick_input_files,
             qlevel_pick_custom_rules_file,
             qlevel_pick_save_workbook_path,
+            qlevel_read_pdf_bytes,
             qlevel_triage_dropped_files,
             qlevel_triage_pasted_clipboard,
             qlevel_submit_rendered_pdf_pages,

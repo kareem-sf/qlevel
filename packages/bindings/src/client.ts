@@ -151,6 +151,10 @@ export class QlevelClient {
     return callCommand<string | null>("qlevel_pick_save_workbook_path", { suggestedPath });
   }
 
+  public readPdfBytes(filePath: string): Promise<number[]> {
+    return callCommand<number[]>("qlevel_read_pdf_bytes", { filePath });
+  }
+
   public triageDroppedFiles(filePaths: string[]): Promise<StagedInputDocumentDto[]> {
     return callCommand<StagedInputDocumentDto[]>("qlevel_triage_dropped_files", {
       filePaths,
