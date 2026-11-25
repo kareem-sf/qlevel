@@ -1,0 +1,36 @@
+[package]
+name = "qlevel-ai"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+description = "Direct cloud Multimodal clients (OpenAI SIWC/API, Gemini v1beta, Claude 2026-10-21) and live model filter for qlevel"
+
+[lib]
+name = "qlevel_ai"
+path = "src/lib.rs"
+
+[dependencies]
+qlevel-domain = { workspace = true }
+
+async-trait = { workspace = true }
+base64 = { workspace = true }
+chrono = { workspace = true }
+rand = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+socket2 = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+url = { workspace = true }
+uuid = { workspace = true }
+zeroize = { workspace = true }
+
+[lints]
+workspace = true
