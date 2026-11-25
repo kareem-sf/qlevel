@@ -1,0 +1,92 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/qlevel-domain",
+    "crates/qlevel-parser",
+    "crates/qlevel-ai",
+    "crates/qlevel-engine",
+    "crates/qlevel-workbook",
+    "crates/qlevel-bridge",
+    "apps/desktop/src-tauri",
+]
+default-members = [
+    "crates/qlevel-domain",
+    "crates/qlevel-parser",
+    "crates/qlevel-ai",
+    "crates/qlevel-engine",
+    "crates/qlevel-workbook",
+    "crates/qlevel-bridge",
+]
+
+[workspace.package]
+version = "0.0.1"
+edition = "2021"
+rust-version = "1.85"
+license = "Apache-2.0"
+authors = ["Kareem Safwat <kareem@qsmind.app>"]
+repository = "https://github.com/sfkareem/qlevel"
+homepage = "https://github.com/sfkareem/qlevel"
+
+[workspace.dependencies]
+qlevel-domain = { path = "crates/qlevel-domain" }
+qlevel-parser = { path = "crates/qlevel-parser" }
+qlevel-ai = { path = "crates/qlevel-ai" }
+qlevel-engine = { path = "crates/qlevel-engine" }
+qlevel-workbook = { path = "crates/qlevel-workbook" }
+qlevel-bridge = { path = "crates/qlevel-bridge" }
+
+aes-gcm = { version = "0.10", features = ["aes", "alloc", "zeroize"] }
+async-trait = "0.1"
+base64 = "0.22"
+blake3 = "1.5"
+calamine = "0.26"
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde", "std"] }
+dirs = "5.0"
+getrandom = "0.2"
+keyring = { version = "3.6", features = ["apple-native", "windows-native", "sync-secret-service"] }
+lopdf = "0.34"
+open = "5.3"
+quick-xml = "0.37"
+rand = "0.8"
+rapidfuzz = "0.5"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls-native-roots", "stream"] }
+rfd = "0.15"
+rusqlite = { version = "0.32", features = ["bundled"] }
+rust_decimal = { version = "1.36", default-features = false, features = ["serde", "std"] }
+rust_xlsxwriter = "0.79"
+self-replace = "1.5"
+self_update = { version = "0.41", default-features = false, features = ["archive-zip", "archive-tar", "compression-flate2", "compression-zip-deflate", "rustls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+socket2 = "0.5"
+tauri = { version = "2.2", features = [] }
+tauri-build = { version = "2.0", features = [] }
+tempfile = "3.14"
+thiserror = "2.0"
+tokio = { version = "1.42", features = ["fs", "io-util", "macros", "net", "rt-multi-thread", "sync", "time"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+ts-rs = { version = "10.1", features = ["serde-compat"] }
+url = "2.5"
+uuid = { version = "1.11", features = ["serde", "v4"] }
+zeroize = { version = "1.8", features = ["derive", "std"] }
+zip = { version = "2.2", default-features = false, features = ["deflate"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+indexing_slicing = "warn"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"

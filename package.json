@@ -1,0 +1,20 @@
+{
+  "name": "qlevel-workspace",
+  "version": "0.0.1",
+  "private": true,
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @qlevel/desktop tauri dev",
+    "build": "pnpm --filter @qlevel/desktop build",
+    "tauri:build": "pnpm --filter @qlevel/desktop tauri build",
+    "typecheck": "pnpm -r typecheck",
+    "bindings:export": "cargo run -p qlevel-bridge --bin export_bindings",
+    "bindings:check": "cargo run -p qlevel-bridge --bin export_bindings -- --check",
+    "rust:test": "cargo test --workspace",
+    "rust:lint": "cargo clippy --workspace --all-targets -- -D warnings"
+  }
+}
