@@ -1,0 +1,28 @@
+[package]
+name = "qlevel-workbook"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+description = "Excel 2016+ live-formula .xlsx comparison workbook generator (SingleMasterSheet & DualTab, RTL/LTR) for qlevel"
+
+[lib]
+name = "qlevel_workbook"
+path = "src/lib.rs"
+
+[dependencies]
+qlevel-domain = { workspace = true }
+qlevel-parser = { workspace = true }
+
+chrono = { workspace = true }
+rust_xlsxwriter = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+zip = { workspace = true }
+
+[lints]
+workspace = true
