@@ -97,25 +97,24 @@ pub async fn check_or_apply_portable_update(
             .build()
             .map_err(|e| BridgeError::Internal(e.to_string()))?;
 
-        let latest = updater
+        let releases = updater
             .get_latest_release()
             .map_err(|e| BridgeError::Network(e.to_string()))?;
 
-        let update_available =
-            self_update::version::bump_is_greater(&current_version, &latest.version)
-                .unwrap_or(false);
+        let update_available = releases.is_update_available().unwrap_or(false);
+        let latest_version = releases.latest().map(|r| r.version().to_owned());
 
         let mut applied = false;
         if update_available && apply_update {
             let status = updater
                 .update()
                 .map_err(|e| BridgeError::Internal(e.to_string()))?;
-            applied = status.updated();
+            applied = status.is_updated();
         }
 
         Ok(UpdateCheckStatusDto {
             current_version,
-            latest_version: Some(latest.version),
+            latest_version,
             update_available,
             applied_portable_update: applied,
         })

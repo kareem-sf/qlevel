@@ -8,7 +8,6 @@ release_always = false
 git_tag_enable = true
 git_tag_name = "v{{ version }}"
 git_release_enable = false
-version_group = "qlevel"
 
 [[package]]
 name = "qlevel-desktop"

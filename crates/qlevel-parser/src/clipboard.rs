@@ -1,5 +1,6 @@
 //! Clipboard table parser supporting Excel/email HTML `<table>` and TSV/CSV paste (`Ctrl+V`).
 
+use quick_xml::escape::unescape;
 use quick_xml::events::Event;
 use quick_xml::Reader as XmlReader;
 
@@ -21,8 +22,7 @@ fn parse_html_table_fragment(html: &str) -> Vec<RawRow> {
     loop {
         match reader.read_event() {
             Ok(Event::Start(e)) => {
-                let tag = e.local_name();
-                let lower = String::from_utf8_lossy(tag.as_ref()).to_lowercase();
+                let lower = e.local_name().as_ref().to_lowercase();
                 if lower == "tr" {
                     in_row = true;
                     current_row.clear();
@@ -32,7 +32,7 @@ fn parse_html_table_fragment(html: &str) -> Vec<RawRow> {
                 }
             }
             Ok(Event::Text(t)) if in_cell => {
-                if let Ok(decoded) = t.unescape() {
+                if let Ok(decoded) = unescape(t.as_ref()) {
                     if !current_cell.is_empty() {
                         current_cell.push(' ');
                     }
@@ -40,8 +40,7 @@ fn parse_html_table_fragment(html: &str) -> Vec<RawRow> {
                 }
             }
             Ok(Event::End(e)) => {
-                let tag = e.local_name();
-                let lower = String::from_utf8_lossy(tag.as_ref()).to_lowercase();
+                let lower = e.local_name().as_ref().to_lowercase();
                 if (lower == "td" || lower == "th") && in_cell {
                     current_row.push(current_cell.trim().to_owned());
                     current_cell.clear();

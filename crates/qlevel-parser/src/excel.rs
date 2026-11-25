@@ -43,19 +43,17 @@ fn scan_ooxml_hidden_metadata(bytes: &[u8]) -> (HashSet<String>, HashMap<usize, 
             reader.config_mut().trim_text(true);
             loop {
                 match reader.read_event() {
-                    Ok(Event::Empty(e) | Event::Start(e))
-                        if e.local_name().as_ref() == b"sheet" =>
-                    {
+                    Ok(Event::Empty(e) | Event::Start(e)) if e.local_name().as_ref() == "sheet" => {
                         let mut name_opt = None;
                         let mut is_hidden = false;
                         for attr in e.attributes().flatten() {
                             match attr.key.local_name().as_ref() {
-                                b"name" => {
-                                    name_opt = String::from_utf8(attr.value.into_owned()).ok();
+                                "name" => {
+                                    name_opt = Some(attr.value.into_owned());
                                 }
-                                b"state" => {
+                                "state" => {
                                     let val = attr.value;
-                                    if val.as_ref() == b"hidden" || val.as_ref() == b"veryHidden" {
+                                    if val.as_ref() == "hidden" || val.as_ref() == "veryHidden" {
                                         is_hidden = true;
                                     }
                                 }
@@ -89,19 +87,17 @@ fn scan_ooxml_hidden_metadata(bytes: &[u8]) -> (HashSet<String>, HashMap<usize, 
         reader.config_mut().trim_text(true);
         loop {
             match reader.read_event() {
-                Ok(Event::Empty(e) | Event::Start(e)) if e.local_name().as_ref() == b"row" => {
+                Ok(Event::Empty(e) | Event::Start(e)) if e.local_name().as_ref() == "row" => {
                     let mut row_num: Option<u32> = None;
                     let mut row_hidden = false;
                     for attr in e.attributes().flatten() {
                         match attr.key.local_name().as_ref() {
-                            b"r" => {
-                                if let Ok(s) = std::str::from_utf8(attr.value.as_ref()) {
-                                    row_num = s.parse::<u32>().ok();
-                                }
+                            "r" => {
+                                row_num = attr.value.as_ref().parse::<u32>().ok();
                             }
-                            b"hidden" => {
+                            "hidden" => {
                                 let v = attr.value;
-                                if v.as_ref() == b"1" || v.as_ref() == b"true" {
+                                if v.as_ref() == "1" || v.as_ref() == "true" {
                                     row_hidden = true;
                                 }
                             }
