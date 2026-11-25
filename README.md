@@ -1,62 +1,33 @@
-# qlevel - Commercial & Technical Bid Leveling Workbench
+# qlevel - Agentic Commercial & Technical Bid Leveling Workbench
 
 **Open-source desktop workbench for Quantity Surveyors, Cost Managers, and Procurement Engineers to equalize subcontractor quotations (`CBE`) and catch hidden technical exclusions (`TBE`) into a live-formula Excel comparison sheet.**
 
 - **License**: Apache-2.0 (`LICENSE`, `NOTICE`, `TRADEMARKS.md`)
-- **Stack**: Tauri v2 + Pure Rust (`rust_decimal` fixed-point math) + React 19 / TypeScript / Tailwind CSS v4
-- **Platforms**: Windows 10/11 (`.exe` portable + NSIS user-space installer), macOS 13+ (`Universal` / Apple Silicon & Intel), Linux (`Ubuntu 22.04+` AppImage / `.deb`)
-- **Zero Server Custody**: Runs 100% locally on your machine using your own direct OpenAI (`Sign in with ChatGPT` or API Key), Google Gemini, or Anthropic Claude account.
+- **Core Engine**: Tauri v2 + Pure Rust (`rust_decimal` fixed-point math, `calamine`, `lopdf`, `rust_xlsxwriter`, `rusqlite` WAL + `BLAKE3`)
+- **Agentic UI Stack**: React 19 + TypeScript + Tailwind CSS v4 + **shadcn/ui** (Radix UI) + **Vercel AI Elements** (`vercel/ai-elements`) + **Google A2UI** (`@a2ui/react` & `@a2ui/web_core` v0.16.1) + `@tanstack/react-table` v9 + `react-resizable-panels` + `cmdk` + `sonner` + `Geist` & `IBM Plex Sans Arabic`
+- **Platforms**: Linux (`Arch Linux` / `Ubuntu 22.04+` portable `.AppImage`, `.deb`, `.rpm`), Windows 10/11 (`.exe` portable + `.msi` / NSIS), macOS 13+ (Apple Silicon & Intel `.dmg`)
+- **Zero Server Custody**: Runs 100% locally on your workstation using your own direct OpenAI (`Sign in with ChatGPT` OAuth PKCE or API Key), Google Gemini, or Anthropic Claude account.
 
-## Why qlevel?
+## Minimalist Agentic UI Architecture
 
-Subcontractors rarely price your Master BOQ cleanly:
+1. **Agentic Command Intake (`Screen 1`)**: Calm monochrome `#FAFAFA` / `#09090B` composer built with Vercel `ai-elements` (`PromptInput`, `Attachments`, `AttachmentChip`), supporting drag-and-drop Excel/PDF tenders, `Ctrl+V` clipboard table/image paste, inline role cycling (`Master` / `Vendor` / `AVL`), and quick-config pills.
+2. **Live Split-Pane Reasoning & Inline A2UI Decisions (`Screen 2`)**: Resizable split workspace pairing a live Vercel `ChainOfThought` Agent Stream and Google **A2UI** (`<A2uiSurface />`) inline Merged Lump-Sum Decision Surface on the left with a live Commercial Equalization `Artifact` grid on the right - zero blocking popup modals.
+3. **Equalized Results & A2UI Source Evidence Inspector (`Screen 3`)**: `@tanstack/react-table` v9 comparison matrix, emerald True Lowest Bidder savings bar, live Excel formula bar preview, graceful `_v2.xlsx` file-lock fallback, and a right-hand Google **A2UI** Source Evidence Inspector highlighting verbatim PDF/Excel exclusion clauses.
+4. **Floating Command Sheet & `Ctrl+K` Palette (`Screen 4`)**: Minimal `shadcn/ui` settings popover (`AI Providers`, `Tender Rules`, `Excel Output`) and global `cmdk` keyboard palette (`Ctrl+K` / `Cmd+K`).
 
-1. **Arithmetic & Quantity Tampering**: Vendors quietly alter BOQ quantities, miscalculate `Qty * Rate`, or hide excluded rows inside `<row hidden="1">` Excel sheets.
-2. **Merged Lump-Sum Rows**: Vendors combine 3 BOQ items into one lump sum (`Included above`), breaking row-by-row Excel formulas.
-3. **Mixed VAT & Provisional Sums**: One bidder includes 15% KSA VAT (or 14% Egypt VAT) inside unit rates while another quotes net, or discounts fixed Provisional Sums contrary to RICS NRM 2 equalization rules.
-4. **Last-Page Technical Exclusions**: A bidder looks 12% cheaper on page 1, then excludes scaffolding, civil builders work, third-party testing, or Approved Vendor List (`AVL`) brands in fine print on the last PDF page.
+## Running on Arch Linux, Windows & macOS
 
-`qlevel` ingests your Master BOQ (or synthesizes a unified baseline straight from raw vendor quotes when no Master BOQ exists), aligns every vendor item without dropping rows, flags all 7 commercial/technical trap categories plus your own custom rules, and exports an auditable `.xlsx` comparison workbook with live `SUM` / `MIN` / `IF` formulas compatible with Excel 2016+.
+Download the latest release from [GitHub Releases](https://github.com/kareem-sf/qlevel/releases):
 
-## Key Capabilities
-
-- **Zero-Trust Fixed-Point Math**: AI models extract text, unit mappings, and exclusion clauses only. Every multiplication, VAT strip, discount proration, and missing-scope plug runs in deterministic Rust `Decimal` arithmetic (`#![deny(clippy::float_arithmetic)]`).
-- **Progressive Disclosure UX**:
-  - **Basic Mode (Default)**: Built for everyday procurement engineers. Drag-and-drop Excel/PDF files or press `Ctrl+V` to paste tables/WhatsApp quote screenshots, review detected roles (`Master BOQ` / `Vendor Quote` / `Specs & AVL`), and click **Compare & Export Excel** using automatic model/effort routing.
-  - **Advanced Options (Collapsible)**: Full control for power users over live Multimodal models, reasoning effort (`Auto` / `Low` / `Medium` / `High`), Excel layout (`Single Master Sheet` vs `Dual-Tab CBE + TBE`), merged-item handling (`Interactive Quick Card` vs `Yellow Highlight Auto-Export`), missing-scope plug basis, currency (`SAR`, `EGP`, `AED`, `QAR`, `KWD`, `BHD`, `OMR`, `USD`, `EUR`), VAT %, `RTL`/`LTR` sheet direction, and custom engineering audit rules.
-- **Direct Cloud Multimodal Providers (Zero Hardcoded Model Lists)**:
-  - **OpenAI**: One-click `Sign in with ChatGPT` (dynamic local OAuth PKCE) or `OPENAI_API_KEY`.
-  - **Google Gemini**: `GEMINI_API_KEY` (with built-in unpaid free-tier confidentiality check).
-  - **Anthropic Claude**: `ANTHROPIC_API_KEY`.
-  - Live `/models` discovery strictly filters out `TTS`, `STT`, `whisper`, `audio`, `embedding`, `imagen`, and retired snapshots so only current Multimodal vision/PDF models appear.
-- **Enterprise-Friendly Local Security**:
-  - Envelope encryption (`32-byte` OS Keyring DEK + `AES-256-GCM` local vault) bypasses the Windows Credential Manager 2560-byte blob limit.
-  - Native OS TLS root certificates (`rustls-tls-native-roots`) work seamlessly behind corporate SSL inspection proxies (`Zscaler`, `FortiGate`).
-  - SQLite WAL batch checkpoints keyed by `BLAKE3` resume interrupted 150-page tenders instantaneously without re-billing completed batches.
-
-## Repository Architecture
-
-```text
-qlevel/
-  apps/
-    desktop/              # React 19 + TypeScript + Tailwind v4 UI + pdf.js rasterizer
-      src-tauri/          # Thin Tauri v2 native shell, strict CSP, capabilities
-  packages/
-    bindings/             # Auto-synchronized Rust <-> TypeScript IPC contracts & client
-    design-system/        # Logical RTL/LTR accessible engineering UI components
-  crates/
-    qlevel-domain/        # Pure fixed-point Decimal domain models & invariants
-    qlevel-parser/        # Excel (calamine + XML hidden-row guard), PDF, Clipboard, Lock probe
-    qlevel-ai/            # OpenAI SIWC/Responses, Gemini v1beta, Claude 2026-10-21, Model filter
-    qlevel-engine/        # SQLite WAL checkpoints, Auto router, Synthetic BOQ, CBE/TBE engine
-    qlevel-workbook/      # Excel 2016+ live-formula .xlsx exporter (SingleSheet & DualTab)
-    qlevel-bridge/        # Envelope OS vault, portable self-updater, Tauri commands, ts-rs CLI
-  docs/                   # Architecture diagrams, ADRs, mathematical & Excel specs, user guides
-  tests/fixtures/         # Golden end-to-end KSA MEP (15% VAT) & Egypt Fit-Out (14% VAT) tenders
-  .github/workflows/      # CI gates, release-plz SemVer PRs, cross-OS builds + Sigstore attest
+```bash
+# Arch Linux / Any x86_64 Linux (Portable AppImage)
+chmod +x qlevel_0.0.2_amd64.AppImage
+./qlevel_0.0.2_amd64.AppImage
+# Note: On Arch Linux without fuse2 installed, run either:
+# sudo pacman -Syu fuse2   OR   ./qlevel_0.0.2_amd64.AppImage --appimage-extract-and-run
 ```
 
-## Quick Start (User-Space Development, No Admin Rights Needed)
+## Local Development
 
 Prerequisites: [Rust 1.85+](https://rustup.rs/), [Node.js 20+](https://nodejs.org/), and [pnpm 9+](https://pnpm.io/).
 
@@ -64,24 +35,15 @@ Prerequisites: [Rust 1.85+](https://rustup.rs/), [Node.js 20+](https://nodejs.or
 git clone https://github.com/kareem-sf/qlevel.git
 cd qlevel
 
-# Install frontend workspace packages
 pnpm install
-
-# Run full Rust unit & golden integration tests
+pnpm -r typecheck
 cargo test --workspace
-
-# Launch the desktop application in development mode
 pnpm dev
-```
-
-To build a portable user-space executable on Windows, macOS, or Linux:
-
-```bash
-pnpm tauri:build
 ```
 
 ## Documentation Index
 
+- [Brand Identity & Agentic Design System (`BRAND_GUIDELINES.md`)](docs/BRAND_GUIDELINES.md)
 - [System Architecture & Data Flow](docs/architecture/OVERVIEW.md)
 - [Commercial Leveling Math Specification (RICS NRM 2 & GCC/Egypt VAT)](docs/specs/COMMERCIAL_MATH_SPEC.md)
 - [Technical Trap & Scope-Exclusion Taxonomy](docs/specs/TECHNICAL_TRAPS_SPEC.md)

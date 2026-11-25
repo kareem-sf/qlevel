@@ -1,239 +1,287 @@
-export type UiLanguage = "ar" | "en";
+export type UiLanguage = "en" | "ar";
 
 export interface Dictionary {
   appName: string;
-  appTagline: string;
-  connectAiBtn: string;
-  connectedBadge: string;
-  notConnectedBadge: string;
-  dropzoneTitle: string;
-  dropzoneSub: string;
-  browseFilesBtn: string;
-  pasteHint: string;
-  roleMasterBoq: string;
-  roleVendorQuote: string;
-  roleSpecAvl: string;
-  syntheticBoqNotice: string;
-  vendorNamePlaceholder: string;
-  hiddenRowsWarning: string;
-  removeDocBtn: string;
-  advancedTitle: string;
-  providerLabel: string;
-  providerAuto: string;
-  modelLabel: string;
-  modelAuto: string;
-  refreshModelsBtn: string;
+  intakeHeadline: string;
+  intakePlaceholder: string;
+  browseBtn: string;
+  pasteShortcutHint: string;
+  roleMaster: string;
+  roleVendor: string;
+  roleAvl: string;
+  hiddenRowsLabel: string;
+  syntheticBaselineNotice: string;
+  vendorPlaceholder: string;
+  autoMultimodalPill: string;
+  singleSheetPill: string;
+  dualTabPill: string;
+  startLevelingBtn: string;
+  navIntake: string;
+  navAgentStream: string;
+  navResults: string;
+  navCommand: string;
+  navTheme: string;
+  navSettings: string;
+  liveTitle: string;
+  agentStreamTitle: string;
+  stepParseBoq: string;
+  stepRasterPdf: string;
+  stepExtractQuotes: string;
+  stepAuditMath: string;
+  checkpointSaved: string;
+  stopRunBtn: string;
+  commercialEqualizationTitle: string;
+  mergedCardHeadline: string;
+  choiceAnchorZero: string;
+  choiceProportional: string;
+  choiceAlternate: string;
+  choicePeerPlug: string;
+  resultsSubtitle: string;
+  tabMatrix: string;
+  tabTraps: string;
+  tabExcelPreview: string;
+  exportXlsxBtn: string;
+  openExcelBtn: string;
+  revealFolderBtn: string;
+  fileLockedNotice: string;
+  saveUnlockedCopyBtn: string;
+  trueLowestBidder: string;
+  savesVsRank2: string;
+  colRankVendor: string;
+  colSubmitted: string;
+  colPlugs: string;
+  colLeveledNet: string;
+  colLeveledGross: string;
+  colTraps: string;
+  inspectorTitle: string;
+  inspectorEmpty: string;
+  noTrapsClean: string;
+  settingsTitle: string;
+  settingsTabProviders: string;
+  settingsTabRules: string;
+  settingsTabExcel: string;
+  connectedLabel: string;
+  disconnectedLabel: string;
+  signInChatGpt: string;
+  apiKeyPlaceholder: string;
+  saveKeyBtn: string;
+  disconnectBtn: string;
+  geminiPrivacyShort: string;
+  geminiPrivacyHint: string;
   effortLabel: string;
   effortAuto: string;
   effortLow: string;
-  effortMedium: string;
+  effortMed: string;
   effortHigh: string;
-  layoutLabel: string;
-  layoutSingle: string;
-  layoutDual: string;
-  mergedModeLabel: string;
-  mergedInteractive: string;
-  mergedYellow: string;
   plugBasisLabel: string;
   plugLowest: string;
-  plugAverage: string;
-  plugHighest: string;
+  plugAvg: string;
+  plugHigh: string;
   plugPte: string;
   currencyLabel: string;
-  vatLabel: string;
-  sheetDirLabel: string;
+  vatPctLabel: string;
   avlLabel: string;
   avlPlaceholder: string;
   customRulesLabel: string;
   customRulesPlaceholder: string;
-  loadRulesFileBtn: string;
-  compareAndExportBtn: string;
-  cancelRunBtn: string;
-  authModalTitle: string;
-  authModalSub: string;
-  signInChatGptBtn: string;
-  apiKeyPlaceholder: string;
-  saveApiKeyBtn: string;
-  disconnectBtn: string;
-  geminiPrivacyLabel: string;
-  closeBtn: string;
-  ambiguityTitle: string;
-  ambiguitySub: string;
-  choiceAnchorZero: string;
-  choiceProportional: string;
-  choiceAlternate: string;
-  choiceExcludePlug: string;
-  resultWinnerLabel: string;
-  saveExcelBtn: string;
-  openExcelBtn: string;
-  revealFolderBtn: string;
-  saveUnlockedFallbackBtn: string;
-  newComparisonBtn: string;
-  vendorCol: string;
-  submittedCol: string;
-  plugsCol: string;
-  leveledNetCol: string;
-  leveledGrossCol: string;
-  trapsCol: string;
-  trapsSectionTitle: string;
-  noTrapsFound: string;
+  loadRulesBtn: string;
+  mergedBehaviorLabel: string;
+  mergedAskInline: string;
+  mergedAutoHighlight: string;
+  sheetDirectionLabel: string;
+  commandPlaceholder: string;
+  commandEmpty: string;
 }
 
 export const DICTIONARIES: Record<UiLanguage, Dictionary> = {
-  ar: {
-    appName: "qlevel",
-    appTagline: "مقارنة العروض المالية والفنية وتوحيد المقايسات",
-    connectAiBtn: "ربط الذكاء الاصطناعي",
-    connectedBadge: "متصل",
-    notConnectedBadge: "غير متصل",
-    dropzoneTitle: "اسحب ملفات المقايسة وعروض الموردين هنا",
-    dropzoneSub: "يدعم ملفات Excel و PDF الرقمية والممسوحة ضوئيا، أو الصق جدول عرض سعر مباشرة بـ Ctrl+V",
-    browseFilesBtn: "اختيار ملفات",
-    pasteHint: "نصيحة: انسخ أي جدول من إيميل أو لقطة واتساب واضغط Ctrl+V للإضافة فورا",
-    roleMasterBoq: "مقايسة أساسية",
-    roleVendorQuote: "عرض مورد",
-    roleSpecAvl: "مواصفات وموردين معتمدين",
-    syntheticBoqNotice: "لم يتم رفع مقايسة أساسية - سيبني البرنامج مقايسة موحدة تلقائيا من عروض الموردين دون إسقاط أي بند",
-    vendorNamePlaceholder: "اسم المقاول / المورد",
-    hiddenRowsWarning: "يحتوي على صفوف مخفية في الإكسيل",
-    removeDocBtn: "حذف",
-    advancedTitle: "خيارات متقدمة (للمهندس المتخصص)",
-    providerLabel: "المزود السحابي",
-    providerAuto: "تلقائي (Auto)",
-    modelLabel: "موديل الرؤية والتحليل (Multimodal)",
-    modelAuto: "توجيه ذكي تلقائي (Auto)",
-    refreshModelsBtn: "تحديث القائمة الحية",
-    effortLabel: "عمق التدقيق الهندسي",
-    effortAuto: "تلقائي",
-    effortLow: "سريع",
-    effortMedium: "متوازن",
-    effortHigh: "عميق",
-    layoutLabel: "تخطيط ملف الإكسيل الناتج",
-    layoutSingle: "شيت واحد شامل (مالي + فني)",
-    layoutDual: "شيتان منفصلان (CBE + TBE)",
-    mergedModeLabel: "معالجة البنود المدمجة بمقطوعية",
-    mergedInteractive: "بطاقة حسم سريعة أثناء الفحص",
-    mergedYellow: "تظليل أصفر تلقائي بدون توقف",
-    plugBasisLabel: "تسعير البنود غير المسعرة (Plug)",
-    plugLowest: "أقل سعر مطابق",
-    plugAverage: "متوسط العروض المطابقة",
-    plugHighest: "أعلى سعر متحفظ",
-    plugPte: "التكلفة التقديرية للمقايسة",
-    currencyLabel: "عملة المقارنة",
-    vatLabel: "ضريبة القيمة المضافة %",
-    sheetDirLabel: "اتجاه شيت الإكسيل",
-    avlLabel: "قائمة الماركات المعتمدة (AVL - مفصولة بفاصلة)",
-    avlPlaceholder: "مثال: Trane, Carrier, Daikin, Schneider",
-    customRulesLabel: "قواعد فحص إضافية خاصة بالمشروع",
-    customRulesPlaceholder: "اكتب كل قاعدة في سطر، مثال: تأكد أن السعر يشمل السقالات واختبارات الطرف الثالث",
-    loadRulesFileBtn: "استيراد ملف قواعد",
-    compareAndExportBtn: "قارن العروض وجهز شيت الإكسيل",
-    cancelRunBtn: "إيقاف العملية",
-    authModalTitle: "ربط مزود الذكاء الاصطناعي المباشر",
-    authModalSub: "تشفير محلي كامل على جهازك (AES-256-GCM) - لا تغادر ملفات مناقصاتك إلى أي خادم وسيط",
-    signInChatGptBtn: "تسجيل الدخول بحساب ChatGPT",
-    apiKeyPlaceholder: "الصق مفتاح الـ API المباشر هنا...",
-    saveApiKeyBtn: "حفظ وتشفير محليا",
-    disconnectBtn: "فصل الحساب",
-    geminiPrivacyLabel: "أقر بأن باقة Gemini المجانية قد تستخدم البيانات لتحسين النماذج، أو أنني أستخدم مفتاح فوترة مدفوعا يحافظ على سرية العروض",
-    closeBtn: "إغلاق",
-    ambiguityTitle: "بند مدمج بمبلغ مقطوع يحتاج قرارك",
-    ambiguitySub: "قام المورد بدمج أكثر من بند من المقايسة في رقم واحد. اختر طريقة التوزيع في شيت الإكسيل:",
-    choiceAnchorZero: "تثبيت المبلغ على البند الأول وتصفير التوابع مع تظليل أصفر",
-    choiceProportional: "توزيع المبلغ تناسبيا حسب أوزان المقايسة",
-    choiceAlternate: "اعتماد كبديل فني مطابق",
-    choiceExcludePlug: "اعتباره غير مسعر وتعويضه من أسعار المنافسين",
-    resultWinnerLabel: "العرض الأقل الحقيقي بعد التوحيد",
-    saveExcelBtn: "حفظ ملف الإكسيل الحي (.xlsx)",
-    openExcelBtn: "فتح في Excel",
-    revealFolderBtn: "عرض في المجلد",
-    saveUnlockedFallbackBtn: "الملف مفتوح في Excel - احفظ كنسخة محدثة (_v2.xlsx)",
-    newComparisonBtn: "مقارنة جديدة",
-    vendorCol: "المقاول / المورد",
-    submittedCol: "المقدم الصافي",
-    plugsCol: "بدل النواقص والاستثناءات",
-    leveledNetCol: "الصافي المقارن العادل",
-    leveledGrossCol: "الإجمالي شامل الضريبة",
-    trapsCol: "الملاحظات والفخاخ",
-    trapsSectionTitle: "الفخاخ الفنية والاستثناءات والتعديلات المكتشفة",
-    noTrapsFound: "لم يتم رصد استثناءات فنية أو أخطاء حسابية في العروض",
-  },
   en: {
     appName: "qlevel",
-    appTagline: "Commercial & Technical Bid Leveling Workbench",
-    connectAiBtn: "AI Connection",
-    connectedBadge: "Connected",
-    notConnectedBadge: "Disconnected",
-    dropzoneTitle: "Drop Master BOQ & Vendor Quotes Here",
-    dropzoneSub: "Supports digital or scanned Excel & PDF files, or press Ctrl+V to paste tables & screenshots directly",
-    browseFilesBtn: "Browse Files",
-    pasteHint: "Tip: Copy any quote table from Excel/email or a WhatsApp screenshot and press Ctrl+V",
-    roleMasterBoq: "Master BOQ",
-    roleVendorQuote: "Vendor Quote",
-    roleSpecAvl: "Specs / AVL",
-    syntheticBoqNotice: "No Master BOQ uploaded - qlevel will synthesize a unified baseline from vendor quotes with zero dropped rows",
-    vendorNamePlaceholder: "Vendor / Subcontractor Name",
-    hiddenRowsWarning: "Contains hidden Excel rows",
-    removeDocBtn: "Remove",
-    advancedTitle: "Advanced Options",
-    providerLabel: "Direct Cloud Provider",
-    providerAuto: "Auto (Connected Account)",
-    modelLabel: "Live Multimodal Model",
-    modelAuto: "Smart Auto-Routing",
-    refreshModelsBtn: "Refresh Live Models",
-    effortLabel: "Audit Reasoning Effort",
-    effortAuto: "Auto",
-    effortLow: "Low",
-    effortMedium: "Medium",
-    effortHigh: "High",
-    layoutLabel: "Excel Workbook Layout",
-    layoutSingle: "Single Master Sheet (CBE + TBE)",
-    layoutDual: "Dual Tabs (01_CBE + 02_TBE)",
-    mergedModeLabel: "Merged Lump-Sum Items",
-    mergedInteractive: "Interactive Quick Decision Card",
-    mergedYellow: "Auto Yellow Highlight in Excel",
-    plugBasisLabel: "Unquoted Scope Plug Basis",
-    plugLowest: "Lowest Compliant Bidder",
-    plugAverage: "Average Compliant Bidder",
-    plugHighest: "Highest Compliant Bidder",
-    plugPte: "Pre-Tender Estimate (PTE)",
-    currencyLabel: "Project Currency",
-    vatLabel: "Statutory VAT %",
-    sheetDirLabel: "Excel Sheet Direction",
-    avlLabel: "Approved Vendor List (AVL - comma separated)",
-    avlPlaceholder: "e.g. Trane, Carrier, Daikin, Schneider",
-    customRulesLabel: "Custom Project Audit Rules",
-    customRulesPlaceholder: "One rule per line, e.g. Scaffolding above 6m and third-party T&C must be included",
-    loadRulesFileBtn: "Load Rules File",
-    compareAndExportBtn: "Compare Bids & Build Excel",
-    cancelRunBtn: "Cancel Run",
-    authModalTitle: "Connect Direct Cloud AI Provider",
-    authModalSub: "Envelope-encrypted locally on your workstation (AES-256-GCM) - zero intermediate servers",
-    signInChatGptBtn: "Sign in with ChatGPT",
-    apiKeyPlaceholder: "Paste direct API key...",
-    saveApiKeyBtn: "Encrypt & Save Locally",
-    disconnectBtn: "Disconnect",
-    geminiPrivacyLabel: "I acknowledge Google's unpaid Gemini Free Tier may review prompts, or confirm I am using a paid billing API key",
-    closeBtn: "Close",
-    ambiguityTitle: "Merged Vendor Lump-Sum Item",
-    ambiguitySub: "This bidder combined multiple Master BOQ items into one lump sum. Choose how to equalize it:",
-    choiceAnchorZero: "Keep lump sum on lead item, zero followers & highlight yellow",
-    choiceProportional: "Split proportionally across BOQ weights",
-    choiceAlternate: "Accept as compliant technical alternate",
-    choiceExcludePlug: "Treat as unquoted & plug from peer bids",
-    resultWinnerLabel: "True Lowest Equalized Bidder",
-    saveExcelBtn: "Save Live Excel (.xlsx)",
+    intakeHeadline: "Level a Tender Package",
+    intakePlaceholder:
+      "Drop BOQ and vendor quotes, or paste tables and screenshots with Ctrl+V...",
+    browseBtn: "Attach files",
+    pasteShortcutHint: "Excel, PDF, scanned offers, or Ctrl+V clipboard tables",
+    roleMaster: "Master",
+    roleVendor: "Vendor",
+    roleAvl: "AVL / Spec",
+    hiddenRowsLabel: "hidden rows",
+    syntheticBaselineNotice:
+      "No Master BOQ attached - unified baseline will be synthesized across vendor quotes",
+    vendorPlaceholder: "Vendor name",
+    autoMultimodalPill: "Auto Multimodal",
+    singleSheetPill: "Single Sheet",
+    dualTabPill: "Dual Tab (CBE + TBE)",
+    startLevelingBtn: "Start Leveling",
+    navIntake: "Tender Intake",
+    navAgentStream: "Live Agentic Leveling",
+    navResults: "Equalized Results",
+    navCommand: "Command Menu (Ctrl+K)",
+    navTheme: "Toggle Appearance",
+    navSettings: "Settings & AI Providers",
+    liveTitle: "Live Agentic Leveling",
+    agentStreamTitle: "Agent Stream",
+    stepParseBoq: "Parsed Master BOQ & worksheet structure",
+    stepRasterPdf: "Prepared high-clarity scanned quote pages",
+    stepExtractQuotes: "Aligned vendor line items & stripped inclusive VAT",
+    stepAuditMath: "Verified extensions, scope omissions & AVL compliance",
+    checkpointSaved: "Progress auto-saved locally",
+    stopRunBtn: "Stop",
+    commercialEqualizationTitle: "Commercial Equalization",
+    mergedCardHeadline: "Merged Lump Sum",
+    choiceAnchorZero: "Anchor on Lead & Zero Followers",
+    choiceProportional: "Split by BOQ Weight",
+    choiceAlternate: "Accept as Alternate",
+    choicePeerPlug: "Apply Peer Plug",
+    resultsSubtitle: "Equalized Results",
+    tabMatrix: "Matrix",
+    tabTraps: "Traps",
+    tabExcelPreview: "Excel Preview",
+    exportXlsxBtn: "Export .xlsx",
     openExcelBtn: "Open in Excel",
     revealFolderBtn: "Show in Folder",
-    saveUnlockedFallbackBtn: "File open in Excel - Save as updated copy (_v2.xlsx)",
-    newComparisonBtn: "New Comparison",
-    vendorCol: "Vendor",
-    submittedCol: "Submitted Net",
-    plugsCol: "Equalization Plugs",
-    leveledNetCol: "True Leveled Net",
-    leveledGrossCol: "Gross (Incl. VAT)",
-    trapsCol: "Traps",
-    trapsSectionTitle: "Detected Technical Exclusions, AVL & Math Traps",
-    noTrapsFound: "No technical exclusions or arithmetic discrepancies detected",
+    fileLockedNotice: "Workbook is currently open in Excel",
+    saveUnlockedCopyBtn: "Save as _v2.xlsx",
+    trueLowestBidder: "True Lowest Bidder",
+    savesVsRank2: "vs Rank 2 after plugs",
+    colRankVendor: "Rank & Vendor",
+    colSubmitted: "Submitted",
+    colPlugs: "Plugs",
+    colLeveledNet: "Leveled Net",
+    colLeveledGross: "Gross (Incl. VAT)",
+    colTraps: "Traps",
+    inspectorTitle: "Source Evidence Inspector",
+    inspectorEmpty: "Select any flagged bidder or trap to inspect its verbatim quote clause.",
+    noTrapsClean: "Clean compliant offer - zero exclusions or arithmetic discrepancies.",
+    settingsTitle: "Settings & AI Providers",
+    settingsTabProviders: "AI Providers",
+    settingsTabRules: "Tender Rules",
+    settingsTabExcel: "Excel Output",
+    connectedLabel: "Connected",
+    disconnectedLabel: "Not connected",
+    signInChatGpt: "Sign in with ChatGPT",
+    apiKeyPlaceholder: "Enter direct API key...",
+    saveKeyBtn: "Save",
+    disconnectBtn: "Disconnect",
+    geminiPrivacyShort: "Privacy",
+    geminiPrivacyHint:
+      "Confirm paid Gemini billing key or acknowledge unpaid tier data policy",
+    effortLabel: "Effort",
+    effortAuto: "Auto",
+    effortLow: "Low",
+    effortMed: "Med",
+    effortHigh: "High",
+    plugBasisLabel: "Plug Basis",
+    plugLowest: "Lowest",
+    plugAvg: "Avg",
+    plugHigh: "High",
+    plugPte: "PTE",
+    currencyLabel: "Currency",
+    vatPctLabel: "VAT %",
+    avlLabel: "Approved Manufacturers (AVL)",
+    avlPlaceholder: "Trane, Carrier, Daikin, Schneider",
+    customRulesLabel: "Project Audit Rules",
+    customRulesPlaceholder: "One rule per line, e.g. Scaffolding above 6m included",
+    loadRulesBtn: "Import .txt",
+    mergedBehaviorLabel: "Merged Lump-Sum Handling",
+    mergedAskInline: "Ask Inline in Stream",
+    mergedAutoHighlight: "Auto Highlight in Excel",
+    sheetDirectionLabel: "Workbook Direction",
+    commandPlaceholder: "Jump to screen, switch language, or run action...",
+    commandEmpty: "No matching command.",
+  },
+  ar: {
+    appName: "qlevel",
+    intakeHeadline: "توحيد ومقارنة عروض المناقصة",
+    intakePlaceholder:
+      "اسحب المقايسة وعروض الموردين هنا، أو الصق الجداول مباشرة عبر Ctrl+V...",
+    browseBtn: "إرفاق ملفات",
+    pasteShortcutHint: "يدعم Excel و PDF والعروض الممسوحة ضوئيا ولصق الجداول",
+    roleMaster: "مقايسة",
+    roleVendor: "مورد",
+    roleAvl: "مواصفات / AVL",
+    hiddenRowsLabel: "صفوف مخفية",
+    syntheticBaselineNotice:
+      "لم يتم إرفاق مقايسة أساسية - سيتم بناء مقايسة موحدة تلقائيا من عروض الموردين",
+    vendorPlaceholder: "اسم المورد",
+    autoMultimodalPill: "توجيه ذكي تلقائي",
+    singleSheetPill: "شيت موحد",
+    dualTabPill: "شيتان (مالي + فني)",
+    startLevelingBtn: "ابدأ المقارنة",
+    navIntake: "إدخال المناقصة",
+    navAgentStream: "التحليل الحي",
+    navResults: "النتائج الموحدة",
+    navCommand: "لوحة الأوامر (Ctrl+K)",
+    navTheme: "تبديل المظهر",
+    navSettings: "الإعدادات ومزودو الذكاء",
+    liveTitle: "التحليل والتوحيد الحي",
+    agentStreamTitle: "مسار الوكيل",
+    stepParseBoq: "قراءة بنود المقايسة وفحص هيكل الجداول",
+    stepRasterPdf: "تجهيز الصفحات الممسوحة ضوئيا بدقة عالية",
+    stepExtractQuotes: "مطابقة بنود الموردين وتجريد الضريبة الشاملة",
+    stepAuditMath: "مراجعة العمليات الحسابية والنواقص وقائمة AVL",
+    checkpointSaved: "تم حفظ التقدم تلقائيا",
+    stopRunBtn: "إيقاف",
+    commercialEqualizationTitle: "التوحيد المالي للعروض",
+    mergedCardHeadline: "مبلغ مقطوع مدمج",
+    choiceAnchorZero: "تثبيت على البند الأول وتصفير التوابع",
+    choiceProportional: "توزيع نسبي بوزن المقايسة",
+    choiceAlternate: "اعتماد كبديل مطابق",
+    choicePeerPlug: "تعويض من أسعار المنافسين",
+    resultsSubtitle: "النتائج الموحدة",
+    tabMatrix: "المصفوفة",
+    tabTraps: "الملاحظات",
+    tabExcelPreview: "معاينة Excel",
+    exportXlsxBtn: "تصدير .xlsx",
+    openExcelBtn: "فتح في Excel",
+    revealFolderBtn: "عرض بالمجلد",
+    fileLockedNotice: "الملف مفتوح حاليا في برنامج Excel",
+    saveUnlockedCopyBtn: "حفظ كنسخة _v2.xlsx",
+    trueLowestBidder: "العرض الأقل الحقيقي",
+    savesVsRank2: "وفر مقارنة بالمركز الثاني",
+    colRankVendor: "الترتيب والمورد",
+    colSubmitted: "المقدم",
+    colPlugs: "التعويضات",
+    colLeveledNet: "الصافي الموحد",
+    colLeveledGross: "شامل الضريبة",
+    colTraps: "الملاحظات",
+    inspectorTitle: "فاحص الأدلة النصية",
+    inspectorEmpty: "اختر أي مورد أو ملاحظة لعرض النص الحرفي من العرض.",
+    noTrapsClean: "عرض مطابق بالكامل بدون استثناءات أو فروق حسابية.",
+    settingsTitle: "الإعدادات ومزودو الذكاء",
+    settingsTabProviders: "مزودو الذكاء",
+    settingsTabRules: "قواعد الفحص",
+    settingsTabExcel: "مخرجات Excel",
+    connectedLabel: "متصل",
+    disconnectedLabel: "غير متصل",
+    signInChatGpt: "الدخول عبر ChatGPT",
+    apiKeyPlaceholder: "أدخل مفتاح API المباشر...",
+    saveKeyBtn: "حفظ",
+    disconnectBtn: "فصل",
+    geminiPrivacyShort: "الخصوصية",
+    geminiPrivacyHint:
+      "تأكيد استخدام باقة مدفوعة أو الإقرار بسياسة الباقة المجانية",
+    effortLabel: "العمق",
+    effortAuto: "تلقائي",
+    effortLow: "سريع",
+    effortMed: "متوازن",
+    effortHigh: "عميق",
+    plugBasisLabel: "أساس التعويض",
+    plugLowest: "الأقل",
+    plugAvg: "المتوسط",
+    plugHigh: "الأعلى",
+    plugPte: "التقديري",
+    currencyLabel: "العملة",
+    vatPctLabel: "الضريبة %",
+    avlLabel: "قائمة المصنعين المعتمدين (AVL)",
+    avlPlaceholder: "Trane, Carrier, Daikin, Schneider",
+    customRulesLabel: "قواعد فحص المشروع",
+    customRulesPlaceholder: "قاعدة في كل سطر، مثال: السعر يشمل السقالات",
+    loadRulesBtn: "استيراد ملف",
+    mergedBehaviorLabel: "معالجة البنود المدمجة",
+    mergedAskInline: "سؤال فوري داخل المسار",
+    mergedAutoHighlight: "تظليل أصفر تلقائي",
+    sheetDirectionLabel: "اتجاه الشيت",
+    commandPlaceholder: "انتقل إلى شاشة أو بدل اللغة أو نفذ أمرا...",
+    commandEmpty: "لا توجد نتائج مطابقة.",
   },
 };

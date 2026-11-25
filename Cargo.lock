@@ -3858,7 +3858,7 @@ dependencies = [
 
 [[package]]
 name = "qlevel-ai"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -3879,7 +3879,7 @@ dependencies = [
 
 [[package]]
 name = "qlevel-bridge"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "aes-gcm",
  "base64 0.22.1",
@@ -3912,7 +3912,7 @@ dependencies = [
 
 [[package]]
 name = "qlevel-desktop"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "open",
  "qlevel-bridge",
@@ -3929,7 +3929,7 @@ dependencies = [
 
 [[package]]
 name = "qlevel-domain"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "rust_decimal",
  "serde",
@@ -3940,7 +3940,7 @@ dependencies = [
 
 [[package]]
 name = "qlevel-engine"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "blake3",
  "chrono",
@@ -3960,7 +3960,7 @@ dependencies = [
 
 [[package]]
 name = "qlevel-parser"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "blake3",
  "calamine",
@@ -3976,7 +3976,7 @@ dependencies = [
 
 [[package]]
 name = "qlevel-workbook"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "chrono",
  "qlevel-domain",

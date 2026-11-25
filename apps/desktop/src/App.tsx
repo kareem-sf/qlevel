@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from "react";
 import {
   QlevelBridgeError,
   qlevelClient,
@@ -15,17 +14,20 @@ import {
   type WorkbookExportOutcomeDto,
 } from "@qlevel/bindings";
 import {
-  Badge,
-  Button,
-  ProgressBar,
-  SegmentedToggle,
-  SurfaceCard,
+  CommandPalette,
+  QlevelToaster,
+  type CommandPaletteAction,
 } from "@qlevel/design-system";
-import { AdvancedOptionsPanel } from "./components/AdvancedOptionsPanel";
-import { AmbiguityDialog } from "./components/AmbiguityDialog";
-import { AuthModal } from "./components/AuthModal";
-import { DropzoneWorkspace } from "./components/DropzoneWorkspace";
-import { ResultView } from "./components/ResultView";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { AgenticIntakeView } from "./components/AgenticIntakeView";
+import { EqualizedResultsView } from "./components/EqualizedResultsView";
+import { IconRail, type WorkspaceScreen } from "./components/IconRail";
+import { LiveAgenticSplitView } from "./components/LiveAgenticSplitView";
+import {
+  SettingsCommandPopover,
+  type SettingsTabId,
+} from "./components/SettingsCommandPopover";
 import { DICTIONARIES, type UiLanguage } from "./i18n";
 import { rasterizePdfPagesInMemory } from "./pdfRenderer";
 
@@ -60,23 +62,27 @@ function blobToBase64(blob: Blob): Promise<string> {
       const comma = res.indexOf(",");
       resolve(comma >= 0 ? res.slice(comma + 1) : res);
     };
-    reader.onerror = () => reject(new Error("Failed reading pasted image"));
+    reader.onerror = () => reject(new Error("Clipboard read failed"));
     reader.readAsDataURL(blob);
   });
 }
 
 export function App() {
-  const [uiLang, setUiLang] = useState<UiLanguage>("ar");
+  const [uiLang, setUiLang] = useState<UiLanguage>("en");
+  const [dark, setDark] = useState<boolean>(false);
   const dict = DICTIONARIES[uiLang];
 
+  const [activeScreen, setActiveScreen] = useState<WorkspaceScreen>("intake");
+  const [commandOpen, setCommandOpen] = useState<boolean>(false);
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+  const [settingsTab, setSettingsTab] = useState<SettingsTabId>("providers");
+
   const [config, setConfig] = useState<LevelingSessionConfig>(() =>
-    createInitialConfig("ar")
+    createInitialConfig("en")
   );
   const [avlText, setAvlText] = useState<string>("");
   const [customRulesText, setCustomRulesText] = useState<string>("");
-  const [advancedOpen, setAdvancedOpen] = useState<boolean>(false);
 
-  const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [statuses, setStatuses] = useState<ProviderAuthStatusDto[]>([]);
   const [liveModels, setLiveModels] = useState<ModelInfo[]>([]);
   const [loadingModels, setLoadingModels] = useState<boolean>(false);
@@ -91,20 +97,34 @@ export function App() {
   const [result, setResult] = useState<LevelingSessionResultDto | null>(null);
   const [exportOutcome, setExportOutcome] =
     useState<WorkbookExportOutcomeDto | null>(null);
-  const [errorBanner, setErrorBanner] = useState<string | null>(null);
-  const [manageUsageUrl, setManageUsageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     document.documentElement.lang = uiLang;
     document.documentElement.dir = uiLang === "ar" ? "rtl" : "ltr";
   }, [uiLang]);
 
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+  }, [dark]);
+
+  // Global Cmd+K / Ctrl+K command menu shortcut
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCommandOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   const refreshStatuses = useCallback(async () => {
     try {
       const list = await qlevelClient.listProviderStatuses();
       setStatuses(list);
     } catch {
-      // Headless browser preview fallback
+      // Browser preview fallback
     }
   }, []);
 
@@ -117,7 +137,7 @@ export function App() {
       setLiveModels(models);
     } catch (err: unknown) {
       if (err instanceof QlevelBridgeError) {
-        setErrorBanner(err.payload.message);
+        toast.error(err.payload.message);
       }
     } finally {
       setLoadingModels(false);
@@ -128,78 +148,77 @@ export function App() {
     void refreshStatuses();
   }, [refreshStatuses]);
 
-  // Subscribe to Tauri progress, ambiguity prompts, scanned PDF rasterization, and native drag-drop
+  // Subscribe to Tauri events (progress, inline A2UI ambiguity prompt, PDF rasterizer, native drop)
   useEffect(() => {
-    let active = true;
+    let mounted = true;
     const unsubs: Array<() => void> = [];
 
     void (async () => {
-      const u1 = await qlevelClient.onProgress((ev) => {
-        if (active) {
-          setProgress(ev);
-        }
-      });
-      const u2 = await qlevelClient.onAmbiguityPrompt((ev) => {
-        if (active) {
-          setAmbiguityPrompt(ev);
-        }
-      });
-      const u3 = await qlevelClient.onPdfRasterRequest((ev) => {
-        if (!active) {
-          return;
-        }
-        void qlevelClient
-          .readPdfBytes(ev.filePath)
-          .then((byteArr) =>
-            rasterizePdfPagesInMemory(
-              new Uint8Array(byteArr),
-              ev.pageNumbers,
-              ev.targetDpi
-            )
-          )
-          .then((pages) =>
-            qlevelClient.submitRenderedPdfPages({
-              documentId: ev.documentId,
-              pages,
-            })
-          )
-          .catch(() => undefined);
-      });
-      const u4 = await qlevelClient.onNativeFileDrop((ev) => {
-        if (!active) {
-          return;
-        }
-        if (ev.kind === "hover") {
-          setIsDragging(true);
-        } else if (ev.kind === "cancel") {
-          setIsDragging(false);
-        } else if (ev.kind === "drop" && ev.paths.length > 0) {
-          setIsDragging(false);
+      try {
+        const u1 = await qlevelClient.onProgress((ev) => {
+          if (mounted) {
+            setProgress(ev);
+          }
+        });
+        const u2 = await qlevelClient.onAmbiguityPrompt((ev) => {
+          if (mounted) {
+            setAmbiguityPrompt(ev);
+          }
+        });
+        const u3 = await qlevelClient.onPdfRasterRequest((ev) => {
+          if (!mounted) return;
           void qlevelClient
-            .triageDroppedFiles(ev.paths)
-            .then((staged) => {
-              setDocuments((prev) => [...prev, ...staged]);
-              setErrorBanner(null);
-            })
-            .catch((err: unknown) => {
-              if (err instanceof QlevelBridgeError) {
-                setErrorBanner(err.payload.message);
-              }
-            });
-        }
-      });
-      unsubs.push(u1, u2, u3, u4);
+            .readPdfBytes(ev.filePath)
+            .then((bytes) =>
+              rasterizePdfPagesInMemory(
+                new Uint8Array(bytes),
+                ev.pageNumbers,
+                ev.targetDpi
+              )
+            )
+            .then((pages) =>
+              qlevelClient.submitRenderedPdfPages({
+                documentId: ev.documentId,
+                pages,
+              })
+            )
+            .catch(() => undefined);
+        });
+        const u4 = await qlevelClient.onNativeFileDrop((ev) => {
+          if (!mounted) return;
+          if (ev.kind === "hover") {
+            setIsDragging(true);
+          } else if (ev.kind === "cancel") {
+            setIsDragging(false);
+          } else if (ev.kind === "drop" && ev.paths.length > 0) {
+            setIsDragging(false);
+            void qlevelClient
+              .triageDroppedFiles(ev.paths)
+              .then((staged) => {
+                setDocuments((prev) => [...prev, ...staged]);
+              })
+              .catch((err: unknown) => {
+                if (err instanceof QlevelBridgeError) {
+                  toast.error(err.payload.message);
+                }
+              });
+          }
+        });
+        unsubs.push(u1, u2, u3, u4);
+      } catch {
+        // Non-Tauri web preview environment
+      }
     })();
 
     return () => {
-      active = false;
+      mounted = false;
       for (const fn of unsubs) {
         fn();
       }
     };
   }, []);
 
-  // Global Ctrl+V clipboard listener for instant Excel/email table & WhatsApp image paste
+  // Global Ctrl+V clipboard listener for instant table & screenshot capture
   useEffect(() => {
     const onPaste = (e: ClipboardEvent) => {
       const target = e.target as HTMLElement | null;
@@ -212,9 +231,7 @@ export function App() {
         return;
       }
       const cd = e.clipboardData;
-      if (!cd) {
-        return;
-      }
+      if (!cd) return;
 
       const items = Array.from(cd.items);
       const imageItem = items.find((it) => it.type.startsWith("image/"));
@@ -231,10 +248,13 @@ export function App() {
                 mimeType: file.type,
               })
             )
-            .then((doc) => setDocuments((prev) => [...prev, doc]))
+            .then((doc) => {
+              setDocuments((prev) => [...prev, doc]);
+              toast.success(doc.fileName);
+            })
             .catch((err: unknown) => {
               if (err instanceof QlevelBridgeError) {
-                setErrorBanner(err.payload.message);
+                toast.error(err.payload.message);
               }
             });
         }
@@ -243,7 +263,10 @@ export function App() {
 
       const html = cd.getData("text/html") || null;
       const plainText = cd.getData("text/plain") || null;
-      if ((html && html.includes("<tr")) || (plainText && plainText.includes("\t"))) {
+      if (
+        (html && html.includes("<tr")) ||
+        (plainText && plainText.includes("\t"))
+      ) {
         e.preventDefault();
         void qlevelClient
           .triagePastedClipboard({
@@ -252,10 +275,13 @@ export function App() {
             imageBase64: null,
             mimeType: "text/plain",
           })
-          .then((doc) => setDocuments((prev) => [...prev, doc]))
+          .then((doc) => {
+            setDocuments((prev) => [...prev, doc]);
+            toast.success(doc.fileName);
+          })
           .catch((err: unknown) => {
             if (err instanceof QlevelBridgeError) {
-              setErrorBanner(err.payload.message);
+              toast.error(err.payload.message);
             }
           });
       }
@@ -266,7 +292,17 @@ export function App() {
   }, []);
 
   const anyConnected = statuses.some((s) => s.connected);
-  const hasVendorQuote = documents.some((d) => d.role === "vendor_quote");
+
+  const openSettingsAt = useCallback(
+    (tab: SettingsTabId = "providers") => {
+      setSettingsTab(tab);
+      setSettingsOpen(true);
+      if (liveModels.length === 0 && anyConnected) {
+        void refreshLiveModels();
+      }
+    },
+    [anyConnected, liveModels.length, refreshLiveModels]
+  );
 
   const handleBrowseFiles = async () => {
     try {
@@ -274,27 +310,25 @@ export function App() {
       if (picked.length > 0) {
         const staged = await qlevelClient.triageDroppedFiles(picked);
         setDocuments((prev) => [...prev, ...staged]);
-        setErrorBanner(null);
       }
     } catch (err: unknown) {
       if (err instanceof QlevelBridgeError) {
-        setErrorBanner(err.payload.message);
+        toast.error(err.payload.message);
       }
     }
   };
 
-  const handleStartComparison = async () => {
+  const handleStartLeveling = async () => {
     if (!anyConnected) {
-      setAuthModalOpen(true);
+      openSettingsAt("providers");
       return;
     }
     setBusy(true);
-    setErrorBanner(null);
-    setManageUsageUrl(null);
     setExportOutcome(null);
+    setActiveScreen("live");
 
     const sessionId = `SES-${Date.now()}`;
-    const preparedConfig: LevelingSessionConfig = {
+    const prepared: LevelingSessionConfig = {
       ...config,
       sessionId,
       uiLocale: uiLang,
@@ -307,20 +341,31 @@ export function App() {
         .map((s) => s.trim())
         .filter((s) => s.length > 0),
     };
-    setConfig(preparedConfig);
+    setConfig(prepared);
 
     try {
       const sessionResult = await qlevelClient.startLevelingSession({
         documents,
-        config: preparedConfig,
+        config: prepared,
       });
       setResult(sessionResult);
+      setActiveScreen("results");
     } catch (err: unknown) {
+      setActiveScreen("intake");
       if (err instanceof QlevelBridgeError) {
-        setErrorBanner(err.payload.message);
-        setManageUsageUrl(err.payload.manageUsageUrl);
+        toast.error(err.payload.message, {
+          action: err.payload.manageUsageUrl
+            ? {
+                label: "Manage",
+                onClick: () =>
+                  void qlevelClient.openExternalUrl(
+                    err.payload.manageUsageUrl ?? ""
+                  ),
+              }
+            : undefined,
+        });
       } else if (err instanceof Error) {
-        setErrorBanner(err.message);
+        toast.error(err.message);
       }
     } finally {
       setBusy(false);
@@ -330,9 +375,7 @@ export function App() {
   };
 
   const handleSaveWorkbook = async (useFallbackIfLocked: boolean) => {
-    if (!result) {
-      return;
-    }
+    if (!result) return;
     setBusy(true);
     try {
       let targetPath = result.suggestedOutputPath;
@@ -352,9 +395,12 @@ export function App() {
         useFallbackIfLocked,
       });
       setExportOutcome(outcome);
+      if (outcome.status === "saved") {
+        toast.success(outcome.outputPath);
+      }
     } catch (err: unknown) {
       if (err instanceof QlevelBridgeError) {
-        setErrorBanner(err.payload.message);
+        toast.error(err.payload.message);
       }
     } finally {
       setBusy(false);
@@ -362,9 +408,7 @@ export function App() {
   };
 
   const handleResolveAmbiguity = async (choice: AmbiguityResolutionChoice) => {
-    if (!ambiguityPrompt) {
-      return;
-    }
+    if (!ambiguityPrompt) return;
     const current = ambiguityPrompt;
     setAmbiguityPrompt(null);
     await qlevelClient.resolveAmbiguityPrompt({
@@ -381,7 +425,6 @@ export function App() {
     ackGeminiPrivacy: boolean
   ) => {
     setBusy(true);
-    setErrorBanner(null);
     try {
       await qlevelClient.saveProviderApiKey({
         provider,
@@ -390,195 +433,181 @@ export function App() {
       });
       await refreshStatuses();
       await refreshLiveModels();
+      toast.success(dict.connectedLabel);
     } catch (err: unknown) {
       if (err instanceof QlevelBridgeError) {
-        setErrorBanner(err.payload.message);
+        toast.error(err.payload.message);
       }
     } finally {
       setBusy(false);
     }
   };
 
+  const commandActions: readonly CommandPaletteAction[] = useMemo(
+    () => [
+      {
+        id: "go-intake",
+        group: "Workspace",
+        label: dict.navIntake,
+        shortcut: "1",
+        onSelect: () => setActiveScreen("intake"),
+      },
+      ...(result
+        ? [
+            {
+              id: "go-results",
+              group: "Workspace",
+              label: dict.navResults,
+              shortcut: "3",
+              onSelect: () => setActiveScreen("results"),
+            },
+          ]
+        : []),
+      {
+        id: "open-providers",
+        group: "Settings",
+        label: dict.settingsTabProviders,
+        onSelect: () => openSettingsAt("providers"),
+      },
+      {
+        id: "open-rules",
+        group: "Settings",
+        label: dict.settingsTabRules,
+        onSelect: () => openSettingsAt("rules"),
+      },
+      {
+        id: "toggle-lang",
+        group: "Preferences",
+        label: uiLang === "en" ? "Switch to Arabic (RTL)" : "Switch to English (LTR)",
+        onSelect: () => setUiLang((prev) => (prev === "en" ? "ar" : "en")),
+      },
+      {
+        id: "toggle-theme",
+        group: "Preferences",
+        label: dict.navTheme,
+        onSelect: () => setDark((prev) => !prev),
+      },
+    ],
+    [dict, openSettingsAt, result, uiLang]
+  );
+
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-3.5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-700 text-sm font-bold text-white">
-              qL
-            </div>
-            <div>
-              <h1 className="text-base font-bold text-slate-900">
-                {dict.appName}
-              </h1>
-              <p className="text-xs text-slate-500">{dict.appTagline}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <SegmentedToggle<UiLanguage>
-              ariaLabel="Language"
-              value={uiLang}
-              onChange={setUiLang}
-              options={[
-                { value: "ar", label: "العربية" },
-                { value: "en", label: "EN" },
-              ]}
-            />
-            <Button
-              variant="secondary"
-              onClick={() => setAuthModalOpen(true)}
-            >
-              <span>{dict.connectAiBtn}</span>
-              <Badge tone={anyConnected ? "success" : "warning"}>
-                {anyConnected ? dict.connectedBadge : dict.notConnectedBadge}
-              </Badge>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-5xl space-y-5 px-6 py-6">
-        {errorBanner && (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-medium text-red-900">
-            <span>{errorBanner}</span>
-            {manageUsageUrl && (
-              <Button
-                variant="secondary"
-                onClick={() => void qlevelClient.openExternalUrl(manageUsageUrl)}
-              >
-                Manage Usage
-              </Button>
-            )}
-          </div>
-        )}
-
-        {result ? (
-          <ResultView
-            dict={dict}
-            result={result}
-            exportOutcome={exportOutcome}
-            busy={busy}
-            onSaveWorkbook={(fallback) => void handleSaveWorkbook(fallback)}
-            onOpenInExcel={(p) => void qlevelClient.openWorkbookInExcel(p)}
-            onRevealFolder={(p) => void qlevelClient.revealWorkbookInFolder(p)}
-            onResetSession={() => {
-              setResult(null);
-              setExportOutcome(null);
-            }}
-          />
-        ) : (
-          <>
-            <DropzoneWorkspace
-              dict={dict}
-              documents={documents}
-              isDragging={isDragging}
-              busy={busy}
-              onBrowseFiles={() => void handleBrowseFiles()}
-              onChangeRole={(id: string, role: DocumentRoleDto) =>
-                setDocuments((prev) =>
-                  prev.map((d) => (d.id === id ? { ...d, role } : d))
-                )
-              }
-              onChangeVendorName={(id: string, vendorName: string) =>
-                setDocuments((prev) =>
-                  prev.map((d) => (d.id === id ? { ...d, vendorName } : d))
-                )
-              }
-              onRemoveDocument={(id: string) =>
-                setDocuments((prev) => prev.filter((d) => d.id !== id))
-              }
-            />
-
-            <AdvancedOptionsPanel
-              dict={dict}
-              open={advancedOpen}
-              onToggleOpen={() => {
-                const next = !advancedOpen;
-                setAdvancedOpen(next);
-                if (next && liveModels.length === 0 && anyConnected) {
-                  void refreshLiveModels();
-                }
-              }}
-              config={config}
-              liveModels={liveModels}
-              loadingModels={loadingModels}
-              avlText={avlText}
-              customRulesText={customRulesText}
-              onChangeConfig={setConfig}
-              onChangeAvlText={setAvlText}
-              onChangeCustomRulesText={setCustomRulesText}
-              onRefreshLiveModels={() => void refreshLiveModels()}
-              onPickCustomRulesFile={() => {
-                void qlevelClient.pickCustomRulesFile().then((path) => {
-                  if (path) {
-                    setCustomRulesText((prev) =>
-                      prev ? `${prev}\n@${path}` : `@${path}`
-                    );
-                  }
-                });
-              }}
-            />
-
-            {busy && progress ? (
-              <SurfaceCard className="space-y-3">
-                <ProgressBar
-                  percent={progress.percent}
-                  label={`${progress.stage}${
-                    progress.activeVendorName
-                      ? ` - ${progress.activeVendorName}`
-                      : ""
-                  }`}
-                  sublabel={
-                    progress.checkpointHit
-                      ? "SQLite WAL checkpoint resumed"
-                      : undefined
-                  }
-                />
-                <div className="flex justify-end">
-                  <Button
-                    variant="danger"
-                    onClick={() =>
-                      void qlevelClient.cancelLevelingSession(config.sessionId)
-                    }
-                  >
-                    {dict.cancelRunBtn}
-                  </Button>
-                </div>
-              </SurfaceCard>
-            ) : (
-              <div className="flex justify-end">
-                <Button
-                  variant="primary"
-                  disabled={busy || !hasVendorQuote}
-                  onClick={() => void handleStartComparison()}
-                  className="px-6 py-2.5 text-base"
-                >
-                  {dict.compareAndExportBtn}
-                </Button>
-              </div>
-            )}
-          </>
-        )}
-      </main>
-
-      <AuthModal
-        open={authModalOpen}
+    <div className="flex h-screen w-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
+      <IconRail
+        activeScreen={activeScreen}
+        hasResults={result !== null}
+        isBusy={busy}
+        dark={dark}
         dict={dict}
+        onSelectScreen={setActiveScreen}
+        onOpenCommand={() => setCommandOpen(true)}
+        onToggleDark={() => setDark((prev) => !prev)}
+        onOpenSettings={() => openSettingsAt("providers")}
+      />
+
+      {activeScreen === "intake" && (
+        <AgenticIntakeView
+          dict={dict}
+          uiLang={uiLang}
+          config={config}
+          documents={documents}
+          isDragging={isDragging}
+          anyProviderConnected={anyConnected}
+          busy={busy}
+          onBrowseFiles={() => void handleBrowseFiles()}
+          onChangeRole={(id: string, role: DocumentRoleDto) =>
+            setDocuments((prev) =>
+              prev.map((d) => (d.id === id ? { ...d, role } : d))
+            )
+          }
+          onChangeVendorName={(id: string, vendorName: string) =>
+            setDocuments((prev) =>
+              prev.map((d) => (d.id === id ? { ...d, vendorName } : d))
+            )
+          }
+          onRemoveDocument={(id: string) =>
+            setDocuments((prev) => prev.filter((d) => d.id !== id))
+          }
+          onToggleLanguage={() =>
+            setUiLang((prev) => (prev === "en" ? "ar" : "en"))
+          }
+          onToggleLayout={() =>
+            setConfig((prev) => ({
+              ...prev,
+              layoutMode:
+                prev.layoutMode === "single_master_sheet"
+                  ? "dual_tab"
+                  : "single_master_sheet",
+            }))
+          }
+          onOpenSettings={(tab) => openSettingsAt(tab)}
+          onStartLeveling={() => void handleStartLeveling()}
+        />
+      )}
+
+      {activeScreen === "live" && (
+        <LiveAgenticSplitView
+          dict={dict}
+          currency={config.currency}
+          documents={documents}
+          progress={progress}
+          ambiguityPrompt={ambiguityPrompt}
+          onResolveAmbiguity={(c) => void handleResolveAmbiguity(c)}
+          onCancel={() => {
+            void qlevelClient.cancelLevelingSession(config.sessionId);
+            setActiveScreen("intake");
+          }}
+        />
+      )}
+
+      {activeScreen === "results" && result && (
+        <EqualizedResultsView
+          dict={dict}
+          result={result}
+          exportOutcome={exportOutcome}
+          busy={busy}
+          onSaveWorkbook={(fallback) => void handleSaveWorkbook(fallback)}
+          onOpenInExcel={(p) => void qlevelClient.openWorkbookInExcel(p)}
+          onRevealFolder={(p) => void qlevelClient.revealWorkbookInFolder(p)}
+        />
+      )}
+
+      <SettingsCommandPopover
+        open={settingsOpen}
+        initialTab={settingsTab}
+        dict={dict}
+        config={config}
         statuses={statuses}
+        liveModels={liveModels}
+        loadingModels={loadingModels}
+        avlText={avlText}
+        customRulesText={customRulesText}
         busy={busy}
-        errorMessage={errorBanner}
-        onClose={() => setAuthModalOpen(false)}
+        onOpenChange={setSettingsOpen}
+        onChangeTab={setSettingsTab}
+        onChangeConfig={setConfig}
+        onChangeAvlText={setAvlText}
+        onChangeCustomRulesText={setCustomRulesText}
+        onRefreshModels={() => void refreshLiveModels()}
+        onPickRulesFile={() => {
+          void qlevelClient.pickCustomRulesFile().then((path) => {
+            if (path) {
+              setCustomRulesText((prev) =>
+                prev ? `${prev}\n@${path}` : `@${path}`
+              );
+            }
+          });
+        }}
         onSignInChatGpt={() => {
           setBusy(true);
-          setErrorBanner(null);
           void qlevelClient
             .startOpenAiChatGptSignIn()
             .then(() => refreshStatuses())
             .then(() => refreshLiveModels())
+            .then(() => toast.success(dict.connectedLabel))
             .catch((err: unknown) => {
               if (err instanceof QlevelBridgeError) {
-                setErrorBanner(err.payload.message);
+                toast.error(err.payload.message);
               }
             })
             .finally(() => setBusy(false));
@@ -591,11 +620,15 @@ export function App() {
         }}
       />
 
-      <AmbiguityDialog
-        prompt={ambiguityPrompt}
-        dict={dict}
-        onResolve={(choice) => void handleResolveAmbiguity(choice)}
+      <CommandPalette
+        open={commandOpen}
+        onOpenChange={setCommandOpen}
+        placeholder={dict.commandPlaceholder}
+        emptyText={dict.commandEmpty}
+        actions={commandActions}
       />
+
+      <QlevelToaster dark={dark} />
     </div>
   );
 }

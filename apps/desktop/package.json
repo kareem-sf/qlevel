@@ -1,6 +1,6 @@
 {
   "name": "@qlevel/desktop",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,12 +11,23 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@a2ui/react": "0.16.1",
+    "@a2ui/web_core": "0.16.1",
+    "@fontsource-variable/geist": "5.3.0",
+    "@fontsource-variable/geist-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans-arabic": "5.3.0",
     "@qlevel/bindings": "workspace:*",
     "@qlevel/design-system": "workspace:*",
+    "@tanstack/react-table": "9.3.1",
     "@tauri-apps/api": "^2.2.0",
+    "cmdk": "1.1.1",
+    "lucide-react": "1.80.0",
     "pdfjs-dist": "^4.10.38",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-resizable-panels": "4.24.2",
+    "sonner": "2.0.8",
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.6",

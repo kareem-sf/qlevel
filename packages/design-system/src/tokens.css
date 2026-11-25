@@ -1,28 +1,79 @@
 @import "tailwindcss";
 
 :root {
-  --ql-bg-canvas: #f8fafc;
-  --ql-bg-surface: #ffffff;
-  --ql-bg-subtle: #f1f5f9;
-  --ql-border-subtle: #e2e8f0;
-  --ql-border-strong: #cbd5e1;
-  --ql-text-primary: #0f172a;
-  --ql-text-secondary: #475569;
-  --ql-accent-teal: #0f766e;
-  --ql-accent-teal-hover: #115e59;
-  --ql-winner-bg: #dcfce7;
-  --ql-winner-fg: #166534;
-  --ql-warn-bg: #fef3c7;
-  --ql-warn-fg: #92400e;
-  --ql-danger-bg: #fee2e2;
-  --ql-danger-fg: #991b1b;
+  --background: #fafafa;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --primary: #09090b;
+  --primary-foreground: #fafafa;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f4f4f5;
+  --accent-foreground: #09090b;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #18181b;
+  --emerald: #10b981;
+  --emerald-subtle: #ecfdf5;
+  --emerald-fg: #065f46;
+  --amber: #f59e0b;
+  --amber-subtle: #fffbeb;
+  --amber-fg: #92400e;
+  --destructive: #ef4444;
+  --destructive-subtle: #fef2f2;
+  --destructive-fg: #991b1b;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #121215;
+  --card-foreground: #fafafa;
+  --popover: #121215;
+  --popover-foreground: #fafafa;
+  --primary: #fafafa;
+  --primary-foreground: #09090b;
+  --secondary: #18181b;
+  --secondary-foreground: #e4e4e7;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --accent: #1f1f23;
+  --accent-foreground: #fafafa;
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #d4d4d8;
+  --emerald: #34d399;
+  --emerald-subtle: #064e3b;
+  --emerald-fg: #a7f3d0;
+  --amber: #fbbf24;
+  --amber-subtle: #451a03;
+  --amber-fg: #fde68a;
+  --destructive: #f87171;
+  --destructive-subtle: #450a0a;
+  --destructive-fg: #fecaca;
+}
+
+* {
+  border-color: var(--border);
 }
 
 body {
-  background-color: var(--ql-bg-canvas);
-  color: var(--ql-text-primary);
-  font-family: "IBM Plex Sans Arabic", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: "Geist Variable", "IBM Plex Sans Arabic", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-mono-tabular {
+  font-family: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 .tabular-nums {
