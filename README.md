@@ -61,7 +61,7 @@ qlevel/
 Prerequisites: [Rust 1.85+](https://rustup.rs/), [Node.js 20+](https://nodejs.org/), and [pnpm 9+](https://pnpm.io/).
 
 ```bash
-git clone https://github.com/sfkareem/qlevel.git
+git clone https://github.com/kareem-sf/qlevel.git
 cd qlevel
 
 # Install frontend workspace packages

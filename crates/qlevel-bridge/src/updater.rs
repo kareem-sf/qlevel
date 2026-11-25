@@ -9,7 +9,7 @@ use sha2::{Digest, Sha256};
 use crate::dto::UpdateCheckStatusDto;
 use crate::error::{BridgeError, BridgeResult};
 
-const GITHUB_REPO_OWNER: &str = "sfkareem";
+const GITHUB_REPO_OWNER: &str = "kareem-sf";
 const GITHUB_REPO_NAME: &str = "qlevel";
 const BIN_NAME: &str = "qlevel-desktop";
 
@@ -70,7 +70,7 @@ pub fn replace_running_portable_binary(
         .map_err(|e| BridgeError::Internal(format!("Portable executable swap failed: {e}")))
 }
 
-/// Checks GitHub Releases (`sfkareem/qlevel`) for a newer SemVer release and optionally updates.
+/// Checks GitHub Releases (`kareem-sf/qlevel`) for a newer SemVer release and optionally updates.
 ///
 /// # Errors
 /// Returns [`BridgeError`] if network or directory writability checks fail.

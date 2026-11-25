@@ -24,7 +24,7 @@ edition = "2021"
 rust-version = "1.89"
 license = "Apache-2.0"
 authors = ["Kareem Safwat <kareem@qsmind.app>"]
-repository = "https://github.com/sfkareem/qlevel"
+repository = "https://github.com/kareem-sf/qlevel"
 
 [workspace.dependencies]
 qlevel-domain = { path = "crates/qlevel-domain" }

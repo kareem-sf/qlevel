@@ -19,7 +19,7 @@
 
 Please do **not** open public GitHub issues for suspected security vulnerabilities.
 
-Report vulnerabilities privately via GitHub Security Advisories on `https://github.com/sfkareem/qlevel/security/advisories/new` or email `kareem@qsmind.app` with:
+Report vulnerabilities privately via GitHub Security Advisories on `https://github.com/kareem-sf/qlevel/security/advisories/new` or email `kareem@qsmind.app` with:
 
 - Affected `qlevel` version and operating system
 - Minimal reproduction steps (using non-confidential synthetic BOQ data)

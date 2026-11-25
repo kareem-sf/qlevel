@@ -23,6 +23,6 @@ This guide documents how `qlevel` ships verifiable cross-platform releases from 
 - `release.yml` computes `SHA256SUMS` across all release installers and portable binaries.
 - On public GitHub repositories (`!github.event.repository.private`), `actions/attest@v4` generates cryptographic Sigstore provenance attestations ([GitHub Attestations](https://docs.github.com/actions/security-for-github-actions/using-artifact-attestations/using-artifact-attestations-to-establish-provenance-for-builds)) verifiable by enterprise IT teams via:
   ```bash
-  gh attestation verify qlevel-portable-windows-x64.exe --owner sfkareem
+  gh attestation verify qlevel-portable-windows-x64.exe --owner kareem-sf
   ```
 - On Windows portable builds, `qlevel-bridge::updater` verifies `SHA-256` digests and checks folder writability before atomically swapping the running `.exe` via `self-replace`.
