@@ -1,0 +1,26 @@
+[package]
+name = "qlevel-domain"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+description = "Pure fixed-point Decimal domain types and RICS/FIDIC bid-leveling invariants for qlevel"
+
+[lib]
+name = "qlevel_domain"
+path = "src/lib.rs"
+
+[dependencies]
+rust_decimal = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+ts-rs = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[lints]
+workspace = true
